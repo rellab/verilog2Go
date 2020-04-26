@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"github.com/go_practice/parser"
+	"github.com/verilog2Go/parser"
 
-	"github.com/go_practice/src/expression"
+	"github.com/verilog2Go/src/expression"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
