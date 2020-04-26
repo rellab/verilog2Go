@@ -6,7 +6,7 @@
 - https://golang.org/dl/ からWIndows用のmsiファイルをダウンロードする
 - ダウンロードしたmsiファイルを実行し，指示にそってインストールする
 - インストールしたbinフォルダにパスを通す
-- - プロジェクトはGOPATH/src/github.com の下に作成する
+  - プロジェクトは$GOPATH/src/github.com の下に作成する
 - インストールのテストを行う
 ```
 > go version
