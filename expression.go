@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/verilog2Go/parser"
+	parser "github.com/verilog2Go/generated/expression"
 
 	"github.com/verilog2Go/src/expression"
 
