@@ -1397,9 +1397,9 @@ expression
    : term (binary_operator attribute_instance* term | '?' attribute_instance* expression ':' term)*
    ;
 
-term returns [int type]
-   : unary_operator attribute_instance* primary { $type = 1; }
-   | primary { $type = 2; }
+term returns [int system]
+   : unary_operator attribute_instance* primary { $system = 1; }
+   | primary { $system = 2; }
    | Strings
    ;
 
@@ -1461,18 +1461,18 @@ module_path_primary
    | '(' module_path_mintypmax_expression ')'
    ;
 
-primary returns [int type]
-   : number { $type = 1; }
-   | hierarchical_identifier { $type = 2; }
-   | hierarchical_identifier ('[' expression ']') + { $type = 3; }
-   | hierarchical_identifier ('[' expression ']') + '[' range_expression ']' { $type = 4; }
-   | hierarchical_identifier '[' range_expression ']' { $type = 5; }
-   | concatenation { $type = 6; }
-   | multiple_concatenation { $type = 7; }
-   | function_call { $type = 8; }
-   | system_function_call { $type = 9; }
-   | constant_function_call { $type = 10; }
-   | '(' mintypmax_expression ')' { $type = 11; }
+primary returns [int system]
+   : number { $system = 1; }
+   | hierarchical_identifier { $system = 2; }
+   | hierarchical_identifier ('[' expression ']') + { $system = 3; }
+   | hierarchical_identifier ('[' expression ']') + '[' range_expression ']' { $system = 4; }
+   | hierarchical_identifier '[' range_expression ']' { $system = 5; }
+   | concatenation { $system = 6; }
+   | multiple_concatenation { $system = 7; }
+   | function_call { $system = 8; }
+   | system_function_call { $system = 9; }
+   | constant_function_call { $system = 10; }
+   | '(' mintypmax_expression ')' { $system = 11; }
    ;
 
 // 8.5 Expression left-side values
