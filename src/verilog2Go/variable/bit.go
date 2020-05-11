@@ -30,3 +30,17 @@ func (ba *BitArray) InitializeBitArray(length int) {
 func (b *Bit) SetValue(value bool) {
 	b.value = value
 }
+
+//Set はBitArrayのBitsに値をセットする
+func (ba *BitArray) Set(value int) {
+	var length = len(ba.bits)
+	var comparison = 1 << length
+	for i := 1; i <= length; i++ {
+		// if (((value << i) & comparison) >> length) == 1 {
+		// 	ba.bits[length - i].SetValue(true)
+		// } else{
+		// 	ba.bits[length - i].SetValue(false)
+		// }
+		ba.bits[length-i].SetValue((((value << i) & comparison) >> length) == 1)
+	}
+}

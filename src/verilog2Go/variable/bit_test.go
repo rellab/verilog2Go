@@ -29,3 +29,12 @@ func TestInitializeBitArray(t *testing.T) {
 	ba.InitializeBitArray(3)
 	fmt.Println(ba.bits)
 }
+
+func TestSet(t *testing.T) {
+	var ba BitArray
+	ba.InitializeBitArray(3)
+	ba.Set(3)
+	assert.Equal(t, ba.bits[0].value, true)
+	assert.Equal(t, ba.bits[1].value, true)
+	assert.Equal(t, ba.bits[2].value, false)
+}
