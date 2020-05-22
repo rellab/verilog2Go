@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 
 	parser "github.com/verilog2Go/generated/verilog"
-	verilog "github.com/verilog2Go/src/verilog2Go"
+	"github.com/verilog2Go/src/builder"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
@@ -24,9 +24,11 @@ func main() {
 	p := parser.NewVerilogParser(stream)
 
 	// リスナーをセットする
-	listener := verilog.NewVerilogListener()
+	listener := builder.NewVerilogListener()
 	p.AddParseListener(listener)
 
 	tree := p.Source_text()
 	fmt.Println(tree.ToStringTree([]string{}, p))
+
+	builder.CreateNewFile()
 }

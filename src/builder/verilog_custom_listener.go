@@ -1,4 +1,4 @@
-package verilog2Go
+package builder
 
 import (
 	"fmt"
