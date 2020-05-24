@@ -10,16 +10,15 @@ type BitArray struct {
 	bits []Bit
 }
 
-//InitializeBit はBitを初期化する
-func (b *Bit) InitializeBit() {
+//InitBit はBitを初期化する
+func (b *Bit) InitBit() {
 	b.value = false
 }
 
-//InitializeBitArray はBitArrayを初期化する
-func (ba *BitArray) InitializeBitArray(length int) {
+//InitBitArray はBitArrayを初期化する
+func (ba *BitArray) InitBitArray(length int) {
 	for i := 0; i < length; i++ {
-		var bit Bit
-		bit.InitializeBit()
+		bit := Bit{false}
 		ba.bits = append(ba.bits, bit)
 	}
 }
@@ -55,7 +54,7 @@ func (ba BitArray) ToInt() int {
 func (ba *BitArray) Calc(value int, length int) BitArray {
 	comparison := 1 << length
 	var result BitArray
-	result.InitializeBitArray(length)
+	result.InitBitArray(length)
 	for i := 1; i <= length; i++ {
 		result.bits[length-i].SetValue((((value << i) & comparison) >> length) == 1)
 	}

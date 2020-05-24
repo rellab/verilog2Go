@@ -1,5 +1,6 @@
 package variable
 
+//Port はBitArrayを所有する
 type Port struct {
-	bitArray BitArray
+	BitArray
 }
