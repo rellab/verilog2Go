@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	parser "github.com/verilog2Go/generated/verilog"
@@ -28,7 +27,9 @@ func main() {
 	p.AddParseListener(listener)
 
 	tree := p.Source_text()
-	fmt.Println(tree.ToStringTree([]string{}, p))
+	treeString := tree.ToStringTree([]string{}, p)
+	// fmt.Println(tree.ToStringTree([]string{}, p))
 
 	builder.CreateNewFile()
+	builder.Write(treeString)
 }

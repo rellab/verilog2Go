@@ -24,6 +24,7 @@ func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_decla
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
 	fmt.Println(ctx.Module_identifier().GetText())
+	StartModule(ctx.Module_identifier().GetText())
 }
 
 // ExitInput_declaration is called when production input_declaration is exited.

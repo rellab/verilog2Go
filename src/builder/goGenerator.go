@@ -6,6 +6,8 @@ import (
 	"os"
 )
 
+var file *os.File
+
 // CreateNewFile は新しいファイルを生成する
 func CreateNewFile() {
 	file, err := os.OpenFile("generated/className.go", os.O_WRONLY|os.O_CREATE, 0666)
@@ -14,6 +16,16 @@ func CreateNewFile() {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	print("書き込み")
-	fmt.Fprintln(file, "書き込みテスト") //書き込み
+}
+
+// Write はファイルにgeneratedGoを書き込む
+func Write(generatedGo string) {
+	fmt.Println(generatedGo)
+	file, err := os.OpenFile("generated/className.go", os.O_WRONLY|os.O_CREATE, 0666)
+	if err != nil {
+		//エラー処理
+		log.Fatal(err)
+	}
+	defer file.Close()
+	fmt.Fprintln(file, ModuleName) //書き込み
 }
