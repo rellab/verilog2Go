@@ -8,19 +8,16 @@ import (
 
 func TestInitialize(t *testing.T) {
 	var bit Bit
-	bit.InitializeBit(1)
+	bit.InitializeBit()
 	assert.Equal(t, false, bit.value)
-	assert.Equal(t, 1, bit.index)
 }
 
 func TestSetValue(t *testing.T) {
 	var bit Bit
-	bit.InitializeBit(0)
+	bit.InitializeBit()
 	assert.Equal(t, false, bit.value)
-	assert.Equal(t, 0, bit.index)
 	bit.SetValue(true)
 	assert.Equal(t, true, bit.value)
-	assert.Equal(t, 0, bit.index)
 }
 
 func TestInitializeBitArray(t *testing.T) {
