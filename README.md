@@ -49,6 +49,7 @@ git checkout tags/4.7.2
 
 - 出力言語を指定してパーサを生成する
 ```
-antlr4 -Dlanguage=Go -o ./parser example.g4
+antlr4 -Dlanguage=Go -o ./antlr/verilog Verilog.g4
+antlr4 -Dlanguage=Go -o ./antlr/expression Expression.g4
 ```
 [antlrのオプション一覧](https://github.com/antlr/antlr4/blob/master/doc/tool-options.md)

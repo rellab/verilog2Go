@@ -19,8 +19,7 @@ func CreateNewFile() {
 }
 
 // Write はファイルにgeneratedGoを書き込む
-func Write(generatedGo string) {
-	fmt.Println(generatedGo)
+func Write() {
 	file, err := os.OpenFile("generated/"+ModuleName+".go", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		//エラー処理

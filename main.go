@@ -3,7 +3,7 @@ package main
 import (
 	"io/ioutil"
 
-	parser "github.com/verilog2Go/generated/verilog"
+	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/builder"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
@@ -27,9 +27,9 @@ func main() {
 	p.AddParseListener(listener)
 
 	tree := p.Source_text()
-	treeString := tree.ToStringTree([]string{}, p)
+	tree.ToStringTree([]string{}, p)
 	// fmt.Println(tree.ToStringTree([]string{}, p))
 
 	builder.CreateNewFile()
-	builder.Write(treeString)
+	builder.Write()
 }

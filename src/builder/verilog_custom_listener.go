@@ -2,13 +2,22 @@ package builder
 
 import (
 	"fmt"
+	"strconv"
 
-	parser "github.com/verilog2Go/generated/verilog"
+	parser "github.com/verilog2Go/antlr/verilog"
 )
 
 // CustomVerilogListener はBaseVerilogListenerを構造体として宣言
 type CustomVerilogListener struct {
 	*parser.BaseVerilogListener
+	ports       []Port
+	currentPort Port
+}
+
+//Port はポートのidとビット数を持つ構造体
+type Port struct {
+	id     string
+	length int
 }
 
 // NewVerilogListener はリスナーの初期化を行う
@@ -23,16 +32,23 @@ func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_decla
 
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
-	fmt.Println(ctx.Module_identifier().GetText())
 	StartModule(ctx.Module_identifier().GetText())
+	//全てのポートのidとlengthを表示
+	for i := 0; i < len(s.ports); i++ {
+		fmt.Println(s.ports[i].id + ", " + strconv.Itoa(s.ports[i].length))
+	}
 }
 
-// ExitInput_declaration is called when production input_declaration is exited.
-func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarationContext) {
-	fmt.Println(ctx.GetText())
+// ExitList_of_port_identifiers is called when production list_of_port_identifiers is exited.
+func (s *CustomVerilogListener) ExitList_of_port_identifiers(ctx *parser.List_of_port_identifiersContext) {
+	for i := 0; i < len(ctx.AllPort_identifier()); i++ {
+		s.currentPort.id = ctx.AllPort_identifier()[i].GetText()
+		s.ports = append(s.ports, s.currentPort)
+	}
 }
 
-// ExitOutput_declaration is called when production output_declaration is exited.
-func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declarationContext) {
-	fmt.Println(ctx.GetText())
+// ExitRange_ is called when production range_ is exited.
+func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
+	//文字列をintに変換
+	s.currentPort.length, _ = strconv.Atoi(ctx.Msb_constant_expression().GetText())
 }
