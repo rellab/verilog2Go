@@ -11,17 +11,32 @@ type BitArray struct {
 }
 
 //InitBitArray はBitArrayを初期化する
-func (ba *BitArray) InitBitArray(value int, length int) BitArray {
+func (ba *BitArray) InitBitArray(length int) {
+	for i := 0; i < length; i++ {
+		bit := Bit{false}
+		ba.bits = append(ba.bits, bit)
+	}
+}
+
+//Set はBitArrayのBitsに値をセットする
+func (ba *BitArray) Set(value int) {
+	length := len(ba.bits)
 	comparison := 1 << length
 	for i := 1; i <= length; i++ {
-		bit := Bit{(((value << i) & comparison) >> length) == 1}
-		if len(ba.bits) == 0 {
-			ba.bits = append(ba.bits, bit)
-		} else {
-			ba.bits, ba.bits[0] = append(ba.bits[:1], ba.bits[0:]...), bit
-		}
+		// ba.bits[length-i].SetValue((((value << i) & comparison) >> length) == 1)
+		ba.bits[length-i].value = (((value << i) & comparison) >> length) == 1
 	}
-	return *ba
+}
+
+// Calc はvalueの値をもつBitArrayを返す
+func (BitArray) Calc(value int, length int) BitArray {
+	comparison := 1 << length
+	var result BitArray
+	result.InitBitArray(length)
+	for i := 1; i <= length; i++ {
+		result.bits[length-i].value = (((value << i) & comparison) >> length) == 1
+	}
+	return result
 }
 
 //ToInt はBitArrayの持つ値を10進数で返す
@@ -43,7 +58,7 @@ func (ba BitArray) Add(input BitArray) BitArray {
 	b := input.ToInt()
 	length := len(ba.bits)
 	var result BitArray
-	result = result.InitBitArray(a+b, length)
+	result = result.Calc(a+b, length)
 	return result
 }
 
@@ -53,7 +68,7 @@ func (ba BitArray) Sub(input BitArray) BitArray {
 	b := input.ToInt()
 	length := len(ba.bits)
 	var result BitArray
-	result = result.InitBitArray(a-b, length)
+	result = result.Calc(a-b, length)
 	return result
 }
 
@@ -63,7 +78,7 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	b := input.ToInt()
 	length := len(ba.bits)
 	var result BitArray
-	result = result.InitBitArray(a*b, length)
+	result = result.Calc(a*b, length)
 	return result
 }
 
