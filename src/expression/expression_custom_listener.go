@@ -3,7 +3,7 @@ package expression
 import (
 	"strings"
 
-	parser "github.com/verilog2Go/generated/expression"
+	parser "github.com/verilog2Go/antlr/expression"
 )
 
 // CustomExpressionListener はBaseExpressionListenerを構造体として宣言

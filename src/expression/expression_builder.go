@@ -1,8 +1,6 @@
 package expression
 
 import (
-	"fmt"
-
 	"github.com/golang-collections/collections/stack"
 )
 
@@ -83,5 +81,4 @@ func OperateBinary(op string) {
 
 	}
 	expression.Push(result)
-	fmt.Println(result)
 }

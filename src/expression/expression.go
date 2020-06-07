@@ -1,26 +1,23 @@
-package main
+package expression
 
 import (
-	"fmt"
-
-	parser "github.com/verilog2Go/generated/expression"
-
-	"github.com/verilog2Go/src/expression"
+	parser "github.com/verilog2Go/antlr/expression"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
-func main() {
-	input := antlr.NewInputStream("a+b*c+ d[2] + e")
+func compileExpression(str string) string {
+	input := antlr.NewInputStream(str)
 
 	lexer := parser.NewExpressionLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)
 	p := parser.NewExpressionParser(stream)
 
 	// リスナーをセットする
-	listener := expression.NewExpressionListener()
+	listener := NewExpressionListener()
 	p.AddParseListener(listener)
 
 	tree := p.Start()
-	fmt.Println(tree.ToStringTree([]string{}, p))
+	tree.ToStringTree([]string{}, p)
+	return expression.Pop().(string)
 }
