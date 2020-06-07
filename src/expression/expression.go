@@ -6,7 +6,7 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
-func compileExpression(str string) string {
+func CompileExpression(str string) string {
 	input := antlr.NewInputStream(str)
 
 	lexer := parser.NewExpressionLexer(input)

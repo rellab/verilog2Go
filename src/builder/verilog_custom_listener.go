@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	parser "github.com/verilog2Go/antlr/verilog"
+	"github.com/verilog2Go/src/expression"
 )
 
 // CustomVerilogListener はBaseVerilogListenerを構造体として宣言
@@ -51,4 +52,10 @@ func (s *CustomVerilogListener) ExitList_of_port_identifiers(ctx *parser.List_of
 func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 	//文字列をintに変換
 	s.currentPort.length, _ = strconv.Atoi(ctx.Msb_constant_expression().GetText())
+}
+
+// ExitNet_assignment is called when production net_assignment is exited.
+func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
+	fmt.Println(ctx.Net_lvalue().GetText())
+	fmt.Println(expression.CompileExpression(ctx.Expression().GetText()))
 }
