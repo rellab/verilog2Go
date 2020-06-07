@@ -10,7 +10,7 @@ var file *os.File
 
 // CreateNewFile は新しいファイルを生成する
 func CreateNewFile() {
-	file, err := os.OpenFile("generated/className.go", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile("generated/"+ModuleName+".go", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		//エラー処理
 		log.Fatal(err)
@@ -21,7 +21,7 @@ func CreateNewFile() {
 // Write はファイルにgeneratedGoを書き込む
 func Write(generatedGo string) {
 	fmt.Println(generatedGo)
-	file, err := os.OpenFile("generated/className.go", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.OpenFile("generated/"+ModuleName+".go", os.O_WRONLY|os.O_CREATE, 0666)
 	if err != nil {
 		//エラー処理
 		log.Fatal(err)
