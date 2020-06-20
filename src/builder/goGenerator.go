@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"log"
 	"os"
 )
@@ -26,5 +25,5 @@ func Write() {
 		log.Fatal(err)
 	}
 	defer file.Close()
-	fmt.Fprintln(file, ModuleName) //書き込み
+	// fmt.Fprintln(file, ModuleName) //書き込み
 }

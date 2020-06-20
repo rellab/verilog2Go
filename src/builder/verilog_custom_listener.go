@@ -34,10 +34,8 @@ func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_decla
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
 	StartModule(ctx.Module_identifier().GetText())
-	//全てのポートのidとlengthを表示
-	for i := 0; i < len(s.ports); i++ {
-		fmt.Println(s.ports[i].id + ", " + strconv.Itoa(s.ports[i].length))
-	}
+	DeclarePorts(s.ports)
+	CreateConstructor(ctx.Module_identifier().GetText(), s.ports)
 }
 
 // ExitList_of_port_identifiers is called when production list_of_port_identifiers is exited.

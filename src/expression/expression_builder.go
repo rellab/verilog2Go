@@ -32,10 +32,10 @@ func OperateUniary(op string) {
 	var result string = ""
 	switch op {
 	case "~":
-		result = value + "not()"
+		result = value + "Not()"
 		break
 	case "|":
-		result = value + "reductionor()"
+		result = value + "Reductionor()"
 		break
 	default:
 
@@ -50,31 +50,31 @@ func OperateBinary(op string) {
 	var result string = ""
 	switch op {
 	case "+":
-		result = left + ".add(" + right + ")"
+		result = left + ".Add(" + right + ")"
 		break
 	case "-":
-		result = left + ".sub(" + right + ")"
+		result = left + ".Sub(" + right + ")"
 		break
 	case "*":
-		result = left + ".mul(" + right + ")"
+		result = left + ".Mul(" + right + ")"
 		break
 	case "/":
-		result = left + ".div(" + right + ")"
+		result = left + ".Div(" + right + ")"
 		break
 	case "&&":
-		result = left + ".and(" + right + ")"
+		result = left + ".And(" + right + ")"
 		break
 	case "==":
-		result = left + ".equal(" + right + ")"
+		result = left + ".Equal(" + right + ")"
 		break
 	case "^":
-		result = left + ".bitxor(" + right + ")"
+		result = left + ".Bitxor(" + right + ")"
 		break
 	case "|":
-		result = left + ".bitor(" + right + ")"
+		result = left + ".Bitor(" + right + ")"
 		break
 	case "&":
-		result = left + ".bitand(" + right + ")"
+		result = left + ".Bitand(" + right + ")"
 		break
 	default:
 		break
