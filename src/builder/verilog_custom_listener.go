@@ -51,6 +51,14 @@ func (s *CustomVerilogListener) ExitList_of_port_identifiers(ctx *parser.List_of
 	}
 }
 
+// ExitList_of_net_identifiers is called when production list_of_net_identifiers is exited.
+func (s *CustomVerilogListener) ExitList_of_net_identifiers(ctx *parser.List_of_net_identifiersContext) {
+	for i := 0; i < len(ctx.AllNet_identifier()); i++ {
+		s.currentPort.id = ctx.AllNet_identifier()[i].GetText()
+		s.ports = append(s.ports, s.currentPort)
+	}
+}
+
 // ExitRange_ is called when production range_ is exited.
 func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 	//文字列をintに変換

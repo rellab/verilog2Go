@@ -20,8 +20,12 @@ func StartModule(moduleName string) {
 func EndModule() {
 	Source = "package generated\n\n"
 	Source += "import \"github.com/verilog2Go/src/builder/variable\"\n\n"
+	//ポートの宣言
 	Source += Ports + "\n"
+	//コンストラクタ
 	Source += Constructor + "\n"
+	//Exec
+	Exec = "func Exec() {\n" + Exec + "}\n"
 	Source += Exec
 }
 
@@ -50,9 +54,7 @@ func CreateConstructor(funcName string, ports []Port) {
 
 // CreateExec はExecを生成する
 func CreateExec(expression string) {
-	Exec = "func Exec() {\n"
 	Exec += inputIndent(1) + expression + "\n"
-	Exec += "}\n"
 }
 
 func inputIndent(indent int) string {
