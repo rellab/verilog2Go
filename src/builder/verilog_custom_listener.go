@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"strconv"
 
 	parser "github.com/verilog2Go/antlr/verilog"
@@ -24,6 +23,12 @@ type Port struct {
 // NewVerilogListener はリスナーの初期化を行う
 func NewVerilogListener() *CustomVerilogListener {
 	return &CustomVerilogListener{}
+}
+
+// ExitSource_text is called when production source_text is exited.
+func (s *CustomVerilogListener) ExitSource_text(ctx *parser.Source_textContext) {
+	//パース終了
+	EndModule()
 }
 
 // EnterModule_declaration is called when production module_declaration is entered.
@@ -54,6 +59,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	fmt.Println(ctx.Net_lvalue().GetText())
-	fmt.Println(expression.CompileExpression(ctx.Expression().GetText()))
+	CreateExec(expression.CompileExpression(ctx.Expression().GetText()))
 }
