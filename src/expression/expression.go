@@ -6,7 +6,10 @@ import (
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
-func CompileExpression(str string) string {
+var ModuleName string
+
+func CompileExpression(str string, moduleName string) string {
+	ModuleName = moduleName
 	input := antlr.NewInputStream(str)
 
 	lexer := parser.NewExpressionLexer(input)

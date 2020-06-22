@@ -3,15 +3,14 @@ package main
 import (
 	"io/ioutil"
 
+	"github.com/antlr/antlr4/runtime/Go/antlr"
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/builder"
-
-	"github.com/antlr/antlr4/runtime/Go/antlr"
 )
 
 func main() {
 	//ファイル読み取り
-	bytes, err := ioutil.ReadFile("./src/examples/adder.v")
+	bytes, err := ioutil.ReadFile("./src/examples/fulladd.v")
 	if err != nil {
 		panic(err)
 	}

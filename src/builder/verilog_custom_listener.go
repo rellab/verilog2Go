@@ -20,6 +20,8 @@ type Port struct {
 	length int
 }
 
+var isInstance bool
+
 // NewVerilogListener はリスナーの初期化を行う
 func NewVerilogListener() *CustomVerilogListener {
 	return &CustomVerilogListener{}
@@ -34,11 +36,20 @@ func (s *CustomVerilogListener) ExitSource_text(ctx *parser.Source_textContext) 
 // EnterModule_declaration is called when production module_declaration is entered.
 func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_declarationContext) {
 	//モジュールの初期化
+	isInstance = false
+}
+
+// ExitModule_identifier is called when production module_identifier is exited.
+func (s *CustomVerilogListener) ExitModule_identifier(ctx *parser.Module_identifierContext) {
+	if !isInstance {
+		StartModule(ctx.GetText())
+	}
+	isInstance = true
 }
 
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
-	StartModule(ctx.Module_identifier().GetText())
+	// StartModule(ctx.Module_identifier().GetText())
 	DeclarePorts(s.ports)
 	CreateConstructor(ctx.Module_identifier().GetText(), s.ports)
 }
@@ -67,5 +78,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	CreateExec(expression.CompileExpression(ctx.Expression().GetText()))
+	CreateExec(expression.CompileExpression(ctx.Expression().GetText(), ModuleName))
 }

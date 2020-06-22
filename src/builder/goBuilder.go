@@ -13,7 +13,7 @@ var Source string
 // StartModule はモジュールの初期化を行う
 func StartModule(moduleName string) {
 	ModuleName = moduleName
-	Ports = "var "
+	Ports = "type " + moduleName + " struct{\n" + inputIndent(1)
 }
 
 // EndModule はモジュール内の要素を一つにまとめる
@@ -21,11 +21,12 @@ func EndModule() {
 	Source = "package generated\n\n"
 	Source += "import \"github.com/verilog2Go/src/builder/variable\"\n\n"
 	//ポートの宣言
+	Ports += "}\n"
 	Source += Ports + "\n"
 	//コンストラクタ
 	Source += Constructor + "\n"
 	//Exec
-	Exec = "func Exec() {\n" + Exec + "}\n"
+	Exec = "func (adder *adder) Exec() {\n" + Exec + "}\n"
 	Source += Exec
 }
 
@@ -40,15 +41,17 @@ func DeclarePorts(ports []Port) {
 // CreateConstructor はコンストラクタを生成する
 func CreateConstructor(funcName string, ports []Port) {
 	//コンストラクタの１行目
-	ConstructorArgument := "func " + strings.Title(funcName) + "("
+	ConstructorArgument := "func (adder *adder) " + strings.Title(funcName) + "("
 	for i := 0; i < len(ports)-1; i++ {
-		inputID := "input" + strings.Title(ports[i].id) //引数名
+		inputID := ports[i].id               //引数名
+		id := ModuleName + "." + ports[i].id //レシーバ内の変数
 		ConstructorArgument += inputID + " variable.BitArray, "
-		Constructor += inputIndent(1) + ports[i].id + ".Set(" + inputID + ".ToInt())\n"
+		Constructor += inputIndent(1) + id + ".Set(" + inputID + ".ToInt())\n"
 	}
-	inputID := "input" + strings.Title(ports[len(ports)-1].id) //引数名
+	inputID := ports[len(ports)-1].id               //引数名
+	id := ModuleName + "." + ports[len(ports)-1].id //レシーバ内の変数
 	ConstructorArgument += inputID + " variable.BitArray) {\n"
-	Constructor += inputIndent(1) + ports[len(ports)-1].id + ".Set(" + inputID + ".ToInt())\n"
+	Constructor += inputIndent(1) + id + ".Set(" + inputID + ".ToInt())\n"
 	Constructor = ConstructorArgument + Constructor + "}\n"
 }
 

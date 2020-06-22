@@ -23,7 +23,7 @@ func GetExpression() string {
 
 // PushValue は値をスタックにプッシュする
 func PushValue(id string) {
-	expression.Push(id)
+	expression.Push(ModuleName + "." + id)
 }
 
 // OperateUniary は単項演算を行う
