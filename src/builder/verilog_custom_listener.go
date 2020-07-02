@@ -78,5 +78,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	CreateExec(expression.CompileExpression(ctx.Expression().GetText(), ModuleName))
+	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), ModuleName))
 }

@@ -82,6 +82,36 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	return result
 }
 
+//Bitxor はポート同士の排他的論理和を返す
+func (ba BitArray) Bitxor(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	length := len(ba.bits)
+	var result BitArray
+	result = result.Calc(a^b, length)
+	return result
+}
+
+//Bitand はポート同士の論理積を返す
+func (ba BitArray) Bitand(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	length := len(ba.bits)
+	var result BitArray
+	result = result.Calc(a&b, length)
+	return result
+}
+
+//Bitor はポート同士の論理和を返す
+func (ba BitArray) Bitor(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	length := len(ba.bits)
+	var result BitArray
+	result = result.Calc(a|b, length)
+	return result
+}
+
 // Assign は引数のBitArrayを割り当てる
 func (ba *BitArray) Assign(result BitArray) {
 	length := len(ba.bits)

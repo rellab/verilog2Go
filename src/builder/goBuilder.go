@@ -26,7 +26,7 @@ func EndModule() {
 	//コンストラクタ
 	Source += Constructor + "\n"
 	//Exec
-	Exec = "func (adder *adder) Exec() {\n" + Exec + "}\n"
+	Exec = "func (" + ModuleName + "*" + ModuleName + ") Exec() {\n" + Exec + "}\n"
 	Source += Exec
 }
 
@@ -41,23 +41,22 @@ func DeclarePorts(ports []Port) {
 // CreateConstructor はコンストラクタを生成する
 func CreateConstructor(funcName string, ports []Port) {
 	//コンストラクタの１行目
-	ConstructorArgument := "func (adder *adder) " + strings.Title(funcName) + "("
+	ConstructorArgument := "func " + strings.Title(funcName) + "("
+	Constructor = inputIndent(1) + "p := new(" + ModuleName + ")\n"
 	for i := 0; i < len(ports)-1; i++ {
-		inputID := ports[i].id               //引数名
-		id := ModuleName + "." + ports[i].id //レシーバ内の変数
-		ConstructorArgument += inputID + " variable.BitArray, "
-		Constructor += inputIndent(1) + id + ".Set(" + inputID + ".ToInt())\n"
+		id := ports[i].id //変数名
+		ConstructorArgument += id + " variable.BitArray, "
+		Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
 	}
-	inputID := ports[len(ports)-1].id               //引数名
-	id := ModuleName + "." + ports[len(ports)-1].id //レシーバ内の変数
-	ConstructorArgument += inputID + " variable.BitArray) {\n"
-	Constructor += inputIndent(1) + id + ".Set(" + inputID + ".ToInt())\n"
-	Constructor = ConstructorArgument + Constructor + "}\n"
+	id := ports[len(ports)-1].id //変数名
+	ConstructorArgument += id + " variable.BitArray) *" + ModuleName + " {\n"
+	Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
+	Constructor = ConstructorArgument + Constructor + inputIndent(1) + "return p\n}\n"
 }
 
 // CreateExec はExecを生成する
-func CreateExec(expression string) {
-	Exec += inputIndent(1) + expression + "\n"
+func CreateExec(id string, expression string) {
+	Exec += inputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
 }
 
 func inputIndent(indent int) string {
