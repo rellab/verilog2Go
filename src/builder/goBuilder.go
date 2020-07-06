@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -57,6 +58,11 @@ func CreateConstructor(funcName string, ports []Port) {
 // CreateExec はExecを生成する
 func CreateExec(id string, expression string) {
 	Exec += inputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
+}
+
+//
+func CreateInstance(instance Instance) {
+	fmt.Println(instance.instanceName)
 }
 
 func inputIndent(indent int) string {
