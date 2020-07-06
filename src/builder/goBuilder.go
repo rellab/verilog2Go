@@ -27,7 +27,7 @@ func EndModule() {
 	//コンストラクタ
 	Source += Constructor + "\n"
 	//Exec
-	Exec = "func (" + ModuleName + "*" + ModuleName + ") Exec() {\n" + Exec + "}\n"
+	Exec = "func (" + ModuleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n"
 	Source += Exec
 }
 
@@ -60,9 +60,20 @@ func CreateExec(id string, expression string) {
 	Exec += inputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
 }
 
-//
+// CreateInstance はインスタンス化を生成する
 func CreateInstance(instance Instance) {
 	fmt.Println(instance.instanceName)
+	Exec += inputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "("
+	for i, exp := range instance.ports {
+		Exec += exp
+		if i == len(instance.ports)-1 {
+			Exec += ")\n"
+		} else {
+			Exec += ", "
+		}
+	}
+
+	Exec += inputIndent(1) + instance.instanceName + ".Exec()\n"
 }
 
 func inputIndent(indent int) string {

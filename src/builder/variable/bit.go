@@ -23,9 +23,22 @@ func (ba *BitArray) Set(value int) {
 	length := len(ba.bits)
 	comparison := 1 << length
 	for i := 1; i <= length; i++ {
-		// ba.bits[length-i].SetValue((((value << i) & comparison) >> length) == 1)
 		ba.bits[length-i].value = (((value << i) & comparison) >> length) == 1
 	}
+}
+
+func CreateBitArray(length int, value int) BitArray {
+	var result BitArray
+	result.InitBitArray(length)
+	result.Set(value)
+	return result
+}
+
+func (ba BitArray) Get(index int) BitArray {
+	var result BitArray
+	result.InitBitArray(1)
+	result.bits[0] = ba.bits[index]
+	return result
 }
 
 // Calc はvalueの値をもつBitArrayを返す

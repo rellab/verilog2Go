@@ -26,6 +26,10 @@ func PushValue(id string) {
 	expression.Push(ModuleName + "." + id)
 }
 
+func AddValue(id string) {
+	expression.Push(id)
+}
+
 // OperateUniary は単項演算を行う
 func OperateUniary(op string) {
 	var value string = expression.Pop().(string)

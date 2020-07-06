@@ -6,5 +6,5 @@ import (
 )
 
 func TestExpressionCompiler(t *testing.T) {
-	fmt.Println(compileExpression("a+b*c+ d[2] + e"))
+	fmt.Println(CompileExpression("1'b0", "adder"))
 }

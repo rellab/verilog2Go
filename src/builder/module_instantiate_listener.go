@@ -2,6 +2,7 @@ package builder
 
 import (
 	parser "github.com/verilog2Go/antlr/verilog"
+	"github.com/verilog2Go/src/expression"
 )
 
 type Instance struct {
@@ -34,7 +35,9 @@ func (s *CustomVerilogListener) ExitModule_instance(ctx *parser.Module_instanceC
 
 // ExitOrdered_port_connection is called when production ordered_port_connection is exited.
 func (s *CustomVerilogListener) ExitOrdered_port_connection(ctx *parser.Ordered_port_connectionContext) {
-	instance.ports = append(instance.ports, ctx.Expression().GetText())
+	expression := expression.CompileExpression(ctx.Expression().GetText(), ModuleName)
+	// fmt.Println(expression)
+	instance.ports = append(instance.ports, expression)
 }
 
 // ExitNamed_port_connection is called when production named_port_connection is entered.

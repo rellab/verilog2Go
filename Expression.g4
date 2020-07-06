@@ -17,11 +17,18 @@ expression returns [int number]
     | expression op=('|'|'~|') expression { $number = 10; }
     | expression op='&&' expression { $number = 11; }
     | expression op='||' expression { $number = 12; }
+    | id=Number { $number = 17; }
     | id=ID { $number = 13; }
     |	'(' expression ')' { $number = 14; }
     | expression '(' expression ')' { $number = 15; }
     | ID'['Decimal ']' { $number = 16; }
     ;
+
+Number
+   :Binary_number
+   | Octal_number
+   | Hex_number
+   ;
 
 ID
    : [a-zA-Z_] [a-zA-Z0-9$_']*

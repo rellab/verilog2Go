@@ -19,6 +19,15 @@ func TestInitBitArray(t *testing.T) {
 	assert.Equal(t, false, ba.bits[2].value)
 }
 
+func TestGet(t *testing.T) {
+	var ba BitArray
+	ba.InitBitArray(3)
+	ba.Set(3)
+	assert.Equal(t, true, ba.Get(0).bits[0].value)
+	assert.Equal(t, true, ba.Get(1).bits[0].value)
+	assert.Equal(t, false, ba.Get(2).bits[0].value)
+}
+
 func TestToInt(t *testing.T) {
 	var ba BitArray
 	ba.InitBitArray(3)
