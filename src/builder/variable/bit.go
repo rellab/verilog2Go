@@ -12,9 +12,10 @@ type BitArray struct {
 
 //InitBitArray はBitArrayを初期化する
 func (ba *BitArray) InitBitArray(length int) {
+	ba.bits = make([]Bit, length)
 	for i := 0; i < length; i++ {
 		bit := Bit{false}
-		ba.bits = append(ba.bits, bit)
+		ba.bits[i] = bit
 	}
 }
 
@@ -27,6 +28,7 @@ func (ba *BitArray) Set(value int) {
 	}
 }
 
+// CreateBitArray はvalueの値を持つBirArrayを返す
 func CreateBitArray(length int, value int) BitArray {
 	var result BitArray
 	result.InitBitArray(length)
@@ -34,10 +36,12 @@ func CreateBitArray(length int, value int) BitArray {
 	return result
 }
 
+// Get はindexで指定したBitを持つBitArrayを返す
 func (ba BitArray) Get(index int) BitArray {
 	var result BitArray
 	result.InitBitArray(1)
-	result.bits[0] = ba.bits[index]
+	//スライスを代入
+	result.bits = ba.bits[index : index+1]
 	return result
 }
 
