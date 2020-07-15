@@ -1,5 +1,7 @@
 package variable
 
+import "fmt"
+
 // Bit はビットを構造体で定義
 type Bit struct {
 	value bool
@@ -69,6 +71,14 @@ func (ba BitArray) ToInt() int {
 	return ret
 }
 
+func notify(a int, b int) {
+	if a < b {
+		fmt.Println("posedge")
+	} else if a > b {
+		fmt.Println("negedge")
+	}
+}
+
 //Add はポート同士の加算を行う
 func (ba BitArray) Add(input BitArray) BitArray {
 	a := ba.ToInt()
@@ -76,6 +86,7 @@ func (ba BitArray) Add(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a+b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
@@ -86,6 +97,7 @@ func (ba BitArray) Sub(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a-b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
@@ -96,6 +108,7 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a*b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
@@ -106,6 +119,7 @@ func (ba BitArray) Bitxor(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a^b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
@@ -116,6 +130,7 @@ func (ba BitArray) Bitand(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a&b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
@@ -126,6 +141,7 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a|b, length)
+	notify(a, result.ToInt())
 	return result
 }
 
