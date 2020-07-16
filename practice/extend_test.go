@@ -13,9 +13,14 @@ func TestGetName(t *testing.T) {
 }
 
 func TestCount(t *testing.T) {
-	var c child
-	c.counter = 0
-	c.p.name = "parent"
-	c.count()
-	fmt.Println(c.p.getName())
+	var m module1
+	m.p.name = "parent"
+	fmt.Println(m.p.getName())
+}
+
+func TestInterface(t *testing.T) {
+	var m module1
+	m.p.name = "parent"
+	m.p.inter = m
+	m.p.runAlways()
 }
