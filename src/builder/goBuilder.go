@@ -72,7 +72,6 @@ func CreateInstance(instance Instance) {
 			Exec += ", "
 		}
 	}
-
 	Exec += inputIndent(1) + instance.instanceName + ".Exec()\n"
 }
 
