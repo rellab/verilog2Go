@@ -8,7 +8,9 @@ import (
 var ModuleName string
 var Ports string
 var Constructor string
+var Observer string
 var Exec string
+var Always string
 var Source string
 
 // StartModule はモジュールの初期化を行う
@@ -25,10 +27,12 @@ func EndModule() {
 	Ports += "}\n"
 	Source += Ports + "\n"
 	//コンストラクタ
-	Source += Constructor + "\n"
+	Source += Constructor
 	//Exec
-	Exec = "func (" + ModuleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n"
+	Exec = "func (" + ModuleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
 	Source += Exec
+	//Always
+	Source += Always
 }
 
 //DeclarePorts はポートの宣言を行う
@@ -52,7 +56,15 @@ func CreateConstructor(funcName string, ports []Port) {
 	id := ports[len(ports)-1].id //変数名
 	ConstructorArgument += id + " variable.BitArray) *" + ModuleName + " {\n"
 	Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
-	Constructor = ConstructorArgument + Constructor + inputIndent(1) + "return p\n}\n"
+	Constructor = ConstructorArgument + Constructor + Observer + inputIndent(1) + "return p\n}\n\n"
+}
+
+func AddPosedgeObserver(id string) {
+	Observer += inputIndent(1) + "p." + id + ".AddPosedgeObserver(p)\n"
+}
+
+func AddNegedgeObserver(id string) {
+	Observer += inputIndent(1) + "p." + id + ".AddNegedgeObserver(p)\n"
 }
 
 // CreateExec はExecを生成する
@@ -73,6 +85,14 @@ func CreateInstance(instance Instance) {
 		}
 	}
 	Exec += inputIndent(1) + instance.instanceName + ".Exec()\n"
+}
+
+func CreateAlways() {
+	Always += "func (" + ModuleName + " " + ModuleName + ") Always(){\n"
+}
+
+func EndAlways() {
+	Always += "}\n"
 }
 
 func inputIndent(indent int) string {

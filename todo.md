@@ -17,6 +17,8 @@ func Cnt_unit(CK variable.BitArray, RES variable.BitArray, EN variable.BitArray,
     p.EN = EN
     p.Q = Q
     p.CA = CA
+    p.CK.AddPosedgeObserver(p)
+    p.RES.AddPosedgeObserver(p)
     return p
 }
 
