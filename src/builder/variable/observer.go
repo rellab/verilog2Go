@@ -9,7 +9,7 @@ type NegedgeObserver interface {
 }
 
 func (ba *BitArray) AddPosedgeObserver(po PosedgeObserver) {
-	ba.pos = po
+	ba.Pos = po
 }
 
 func (ba *BitArray) AddNegedgeObserver(no NegedgeObserver) {
@@ -17,7 +17,7 @@ func (ba *BitArray) AddNegedgeObserver(no NegedgeObserver) {
 }
 
 func (ba BitArray) NotifyPosedgeObserver() {
-	ba.pos.Always()
+	ba.Pos.Always()
 }
 
 func (ba BitArray) NotifyNegedgeObserver() {

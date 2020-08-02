@@ -54,9 +54,9 @@ func CreateConstructor(funcName string, ports []Port) {
 		Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
 	}
 	id := ports[len(ports)-1].id //変数名
-	ConstructorArgument += id + " variable.BitArray) *" + ModuleName + " {\n"
+	ConstructorArgument += id + " variable.BitArray) " + ModuleName + " {\n"
 	Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
-	Constructor = ConstructorArgument + Constructor + Observer + inputIndent(1) + "return p\n}\n\n"
+	Constructor = ConstructorArgument + Constructor + Observer + inputIndent(1) + "return *p\n}\n\n"
 }
 
 func AddPosedgeObserver(id string) {

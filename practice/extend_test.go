@@ -24,3 +24,7 @@ func TestInterface(t *testing.T) {
 	m.p.inter = m
 	m.p.runAlways()
 }
+
+func TestMain(t *testing.T) {
+	main()
+}

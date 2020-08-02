@@ -27,3 +27,12 @@ func (p parent) runAlways() {
 func (m module1) always() {
 	fmt.Println("module1")
 }
+
+func main() {
+	p := parent{name: "Taro"} // 値型の変数を用意する
+	(&p).Greet("Hi")
+}
+
+func (p *parent) Greet(smg string) {
+	fmt.Println(smg)
+}
