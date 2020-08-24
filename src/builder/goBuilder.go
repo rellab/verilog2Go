@@ -16,7 +16,7 @@ var Source string
 // StartModule はモジュールの初期化を行う
 func StartModule(moduleName string) {
 	ModuleName = moduleName
-	Ports = "type " + moduleName + " struct{\n" + inputIndent(1)
+	Ports = "type " + moduleName + " struct{\n" + InputIndent(1)
 }
 
 // EndModule はモジュール内の要素を一つにまとめる
@@ -47,35 +47,27 @@ func DeclarePorts(ports []Port) {
 func CreateConstructor(funcName string, ports []Port) {
 	//コンストラクタの１行目
 	ConstructorArgument := "func " + strings.Title(funcName) + "("
-	Constructor = inputIndent(1) + "p := new(" + ModuleName + ")\n"
+	Constructor = InputIndent(1) + "p := new(" + ModuleName + ")\n"
 	for i := 0; i < len(ports)-1; i++ {
 		id := ports[i].id //変数名
 		ConstructorArgument += id + " variable.BitArray, "
-		Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
+		Constructor += InputIndent(1) + "p." + id + " = " + id + "\n"
 	}
 	id := ports[len(ports)-1].id //変数名
 	ConstructorArgument += id + " variable.BitArray) " + ModuleName + " {\n"
-	Constructor += inputIndent(1) + "p." + id + " = " + id + "\n"
-	Constructor = ConstructorArgument + Constructor + Observer + inputIndent(1) + "return *p\n}\n\n"
-}
-
-func AddPosedgeObserver(id string) {
-	Observer += inputIndent(1) + "p." + id + ".AddPosedgeObserver(p)\n"
-}
-
-func AddNegedgeObserver(id string) {
-	Observer += inputIndent(1) + "p." + id + ".AddNegedgeObserver(p)\n"
+	Constructor += InputIndent(1) + "p." + id + " = " + id + "\n"
+	Constructor = ConstructorArgument + Constructor + Observer + InputIndent(1) + "return *p\n}\n\n"
 }
 
 // CreateExec はExecを生成する
 func CreateExec(id string, expression string) {
-	Exec += inputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
+	Exec += InputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
 }
 
 // CreateInstance はインスタンス化を生成する
 func CreateInstance(instance Instance) {
 	fmt.Println(instance.instanceName)
-	Exec += inputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "("
+	Exec += InputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "("
 	for i, exp := range instance.ports {
 		Exec += exp
 		if i == len(instance.ports)-1 {
@@ -84,18 +76,10 @@ func CreateInstance(instance Instance) {
 			Exec += ", "
 		}
 	}
-	Exec += inputIndent(1) + instance.instanceName + ".Exec()\n"
+	Exec += InputIndent(1) + instance.instanceName + ".Exec()\n"
 }
 
-func CreateAlways() {
-	Always += "func (" + ModuleName + " " + ModuleName + ") Always(){\n"
-}
-
-func EndAlways() {
-	Always += "}\n"
-}
-
-func inputIndent(indent int) string {
+func InputIndent(indent int) string {
 	var result string
 	for i := 0; i < indent*4; i++ {
 		result += " "
