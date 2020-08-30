@@ -23,7 +23,11 @@ func GetExpression() string {
 
 // PushValue は値をスタックにプッシュする
 func PushValue(id string) {
-	expression.Push(ModuleName + "." + id)
+	if ModuleName == "" {
+		expression.Push(id)
+	} else {
+		expression.Push(ModuleName + "." + id)
+	}
 }
 
 func AddValue(id string) {

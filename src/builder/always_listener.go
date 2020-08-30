@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	parser "github.com/verilog2Go/antlr/verilog"
+	"github.com/verilog2Go/src/expression"
 )
 
 var IfDepth int
@@ -53,7 +54,7 @@ func (s *CustomVerilogListener) ExitExpression(ctx *parser.ExpressionContext) {
 	//if文の条件式
 	if IfDepth > 0 && !hasExpression {
 		hasExpression = true
-		IfStatement(ctx.GetText())
+		IfStatement(expression.CompileExpression(ctx.GetText(), ""))
 	}
 }
 
