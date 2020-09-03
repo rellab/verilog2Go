@@ -40,10 +40,10 @@ func OperateUniary(op string) {
 	var result string = ""
 	switch op {
 	case "~":
-		result = value + "Not()"
+		result = value + ".Not()"
 		break
 	case "|":
-		result = value + "Reductionor()"
+		result = value + ".Reductionor()"
 		break
 	default:
 
