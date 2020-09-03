@@ -1,7 +1,11 @@
 package builder
 
+import "strconv"
+
 var nonBlockingStatementCount int
 var ifBlock string
+var leftBlock string
+var rightBlock string
 
 func AddPosedgeObserver(id string) {
 	Observer += InputIndent(1) + "p." + id + ".AddPosedgeObserver(p)\n"
@@ -16,7 +20,7 @@ func CreateAlways() {
 }
 
 func EndAlways() {
-	Always += "}\n"
+	Always += leftBlock + "}\n"
 }
 
 func IfStart() {
@@ -26,20 +30,21 @@ func IfStart() {
 func IfStatement(conditionalStatement string) {
 	// ifBlock = InputIndent(1) + "if " + conditionalStatement + ifBlock
 	// Always += ifBlock
-	Always += InputIndent(IfDepth) + "if " + conditionalStatement + " {\n"
+	leftBlock += InputIndent(IfDepth) + "if " + conditionalStatement + " {\n"
 }
 
 func ElseStatement() {
-	Always += InputIndent(IfDepth) + "else{\n"
+	leftBlock += InputIndent(IfDepth) + "else{\n"
 }
 
 func EndIfStatement() {
-	Always += InputIndent(IfDepth) + "}\n"
+	leftBlock += InputIndent(IfDepth) + "}\n"
 }
 
-func DeclarateVariable(expression string) {
+func DeclarateVariable(expression string, count int) {
 	nonBlockingStatementCount++
-	Always += InputIndent(IfDepth+1) + expression + "\n"
+	Always += InputIndent(1) + "var" + strconv.Itoa(count) + " = variable.InitBitArray(8)\n"
+	leftBlock += InputIndent(IfDepth+1) + expression + "\n"
 	//ノンブロッキング代入の右辺を格納しておく変数を宣言
 	//var varable1 variable.BitArray
 }

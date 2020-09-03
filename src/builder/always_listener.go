@@ -10,6 +10,7 @@ import (
 var IfDepth int
 var hasExpression bool
 var statementCount int
+var nbCount int
 
 // EnterProcedural_timing_control_statement is called when production procedural_timing_control_statement is entered.
 func (s *CustomVerilogListener) EnterProcedural_timing_control_statement(ctx *parser.Procedural_timing_control_statementContext) {
@@ -83,6 +84,7 @@ func (s *CustomVerilogListener) ExitStatement_or_null(ctx *parser.Statement_or_n
 
 // ExitNonblocking_assignment is called when production nonblocking_assignment is exited.
 func (s *CustomVerilogListener) ExitNonblocking_assignment(ctx *parser.Nonblocking_assignmentContext) {
-	// fmt.Println("nonblocking " + ctx.GetText())
-	DeclarateVariable(ctx.GetText())
+	//ノンブロッキング代入文
+	nbCount++
+	DeclarateVariable(ctx.GetText(), nbCount)
 }
