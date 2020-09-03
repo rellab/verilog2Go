@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/verilog2Go/src/builder/variable"
+	"github.com/verilog2Go/src/variable"
 )
 
 type TestModule struct {

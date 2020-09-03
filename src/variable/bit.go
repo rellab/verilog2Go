@@ -149,6 +149,16 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	return result
 }
 
+func (ba BitArray) Equal(input BitArray) bool {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a == b {
+		return true
+	} else {
+		return false
+	}
+}
+
 // Assign は引数のBitArrayを割り当てる
 func (ba *BitArray) Assign(result BitArray) {
 	length := len(ba.bits)

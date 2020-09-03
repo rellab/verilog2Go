@@ -70,6 +70,18 @@ func TestMul(t *testing.T) {
 	assert.Equal(t, 4, a.Mul(b).ToInt())
 }
 
+func TestEqual(t *testing.T) {
+	var a BitArray
+	a.InitBitArray(3)
+	a.Set(2)
+	var b BitArray
+	b.InitBitArray(3)
+	b.Set(3)
+	assert.Equal(t, false, a.Equal(b))
+	b.Set(2)
+	assert.Equal(t, true, a.Equal(b))
+}
+
 func TestAssign(t *testing.T) {
 	var a BitArray
 	a.InitBitArray(3)
