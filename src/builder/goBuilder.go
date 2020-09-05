@@ -22,7 +22,7 @@ func StartModule(moduleName string) {
 // EndModule はモジュール内の要素を一つにまとめる
 func EndModule() {
 	Source = "package generated\n\n"
-	Source += "import \"github.com/verilog2Go/src/builder/variable\"\n\n"
+	Source += "import \"github.com/verilog2Go/src/variable\"\n\n"
 	//ポートの宣言
 	Ports += "}\n"
 	Source += Ports + "\n"

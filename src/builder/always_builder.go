@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -22,7 +21,7 @@ func AddNegedgeObserver(id string) {
 }
 
 func CreateAlways() {
-	Always += "func (" + ModuleName + " " + ModuleName + ") Always(){\n"
+	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(){\n"
 }
 
 func EndAlways() {
@@ -39,8 +38,9 @@ func IfStatement(conditionalStatement string) {
 }
 
 func ElseStatement() {
-	leftBlock += InputIndent(IfDepth) + "else{\n"
-	rightBlock += InputIndent(IfDepth) + "else{\n"
+	//直前の改行コードを削除
+	leftBlock = leftBlock[:len(leftBlock)-1] + " else{\n"
+	rightBlock = rightBlock[:len(rightBlock)-1] + " else{\n"
 }
 
 func EndIfStatement() {
@@ -54,10 +54,9 @@ func DeclarateVariable(exp string) {
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
 	slice := strings.Split(exp, "<=")
 
-	Always += InputIndent(1) + temp + " := variable.InitBitArray(8)\n"
-	fmt.Println(slice[0])
-	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + expression.CompileExpression(slice[1], "") + ")\n"
-	rightBlock += InputIndent(IfDepth+1) + slice[0] + ".Assign(" + temp + ")\n"
+	Always += InputIndent(1) + temp + " := variable.CreateBitArray(0, 8)\n"
+	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + expression.CompileExpression(slice[1], ModuleName) + ")\n"
+	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + temp + ")\n"
 	//ノンブロッキング代入の右辺を格納しておく変数を宣言
 	//var varable1 variable.BitArray
 }

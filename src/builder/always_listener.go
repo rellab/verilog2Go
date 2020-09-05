@@ -54,7 +54,7 @@ func (s *CustomVerilogListener) ExitExpression(ctx *parser.ExpressionContext) {
 	//if文の条件式
 	if IfDepth > 0 && !hasExpression {
 		hasExpression = true
-		IfStatement(expression.CompileExpression(ctx.GetText(), ""))
+		IfStatement(expression.CompileExpression(ctx.GetText(), ModuleName))
 	}
 }
 
