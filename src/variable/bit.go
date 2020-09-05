@@ -1,5 +1,7 @@
 package variable
 
+import "fmt"
+
 // Bit はビットを構造体で定義
 type Bit struct {
 	value bool
@@ -74,6 +76,7 @@ func (ba BitArray) ToInt() int {
 
 func notify(a BitArray, b int) {
 	if a.ToInt() < b && a.Pos != nil {
+		fmt.Println("always")
 		a.NotifyPosedgeObserver()
 	} else if a.ToInt() > b && a.neg != nil {
 		a.NotifyNegedgeObserver()

@@ -50,12 +50,12 @@ func CreateConstructor(funcName string, ports []Port) {
 	Constructor = InputIndent(1) + "p := new(" + ModuleName + ")\n"
 	for i := 0; i < len(ports)-1; i++ {
 		id := ports[i].id //変数名
-		ConstructorArgument += id + " variable.BitArray, "
-		Constructor += InputIndent(1) + "p." + id + " = " + id + "\n"
+		ConstructorArgument += id + " *variable.BitArray, "
+		Constructor += InputIndent(1) + "p." + id + " = *" + id + "\n"
 	}
 	id := ports[len(ports)-1].id //変数名
-	ConstructorArgument += id + " variable.BitArray) " + ModuleName + " {\n"
-	Constructor += InputIndent(1) + "p." + id + " = " + id + "\n"
+	ConstructorArgument += id + " *variable.BitArray) " + ModuleName + " {\n"
+	Constructor += InputIndent(1) + "p." + id + " = *" + id + "\n"
 	Constructor = ConstructorArgument + Constructor + Observer + InputIndent(1) + "return *p\n}\n\n"
 }
 
