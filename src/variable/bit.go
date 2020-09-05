@@ -149,6 +149,18 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	return result
 }
 
+func (ba BitArray) Not() BitArray {
+	length := len(ba.bits)
+	var result BitArray
+	result.InitBitArray(length)
+	for i := 0; i < length; i++ {
+		result.bits[i].value = !ba.bits[i].value
+	}
+	notify(ba, result.ToInt())
+	return result
+}
+
+//Equal はBitArrayの持つ値が等しいかどうかを返す
 func (ba BitArray) Equal(input BitArray) bool {
 	a := ba.ToInt()
 	b := input.ToInt()
