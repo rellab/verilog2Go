@@ -1,6 +1,8 @@
 package builder
 
 import (
+	"strings"
+
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/expression"
 )
@@ -37,6 +39,9 @@ func (s *CustomVerilogListener) ExitModule_instance(ctx *parser.Module_instanceC
 func (s *CustomVerilogListener) ExitOrdered_port_connection(ctx *parser.Ordered_port_connectionContext) {
 	expression := expression.CompileExpression(ctx.Expression().GetText(), ModuleName)
 	// fmt.Println(expression)
+	if !strings.Contains(expression, "Get(") && !strings.Contains(expression, "CreateBitArray(") {
+		expression = "&" + expression
+	}
 	instance.ports = append(instance.ports, expression)
 }
 
