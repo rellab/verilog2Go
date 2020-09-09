@@ -55,8 +55,12 @@ func DeclarateVariable(exp string) {
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
 	slice := strings.Split(exp, "<=")
 
-	Always += InputIndent(1) + temp + " := variable.CreateBitArray(8, 0)\n"
-	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + expression.CompileExpression(slice[1], ModuleName) + ")\n"
+	Always += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
+	right := expression.CompileExpression(slice[1], ModuleName)
+	if strings.Contains(right, "Get(") || strings.Contains(right, "CreateBitArray(") {
+		right = "*" + right
+	}
+	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + right + ")\n"
 	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + temp + ")\n"
 	//ノンブロッキング代入の右辺を格納しておく変数を宣言
 	//var varable1 variable.BitArray
