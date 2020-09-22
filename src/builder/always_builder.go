@@ -57,11 +57,9 @@ func DeclarateVariable(exp string) {
 
 	Always += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
 	right := expression.CompileExpression(slice[1], ModuleName)
-	if strings.Contains(right, "Get(") || strings.Contains(right, "CreateBitArray(") {
+	if strings.Contains(right[len(right)-7:len(right)], "Get(") || strings.Contains(right[len(right)-20:len(right)], "CreateBitArray(") {
 		right = "*" + right
 	}
 	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + right + ")\n"
 	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + temp + ")\n"
-	//ノンブロッキング代入の右辺を格納しておく変数を宣言
-	//var varable1 variable.BitArray
 }
