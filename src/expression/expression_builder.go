@@ -84,6 +84,9 @@ func OperateBinary(op string) {
 	case "&":
 		result = left + ".Bitand(" + right + ")"
 		break
+	case "=":
+		result = left + ".Set(" + right + ")"
+		break
 	default:
 		break
 
