@@ -2,6 +2,7 @@ package builder
 
 import (
 	"strconv"
+	"strings"
 
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/expression"
@@ -54,18 +55,29 @@ func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declar
 	CreateConstructor(ctx.Module_identifier().GetText(), s.ports)
 }
 
-// ExitList_of_port_identifiers is called when production list_of_port_identifiers is exited.
-func (s *CustomVerilogListener) ExitList_of_port_identifiers(ctx *parser.List_of_port_identifiersContext) {
-	for i := 0; i < len(ctx.AllPort_identifier()); i++ {
-		s.currentPort.id = ctx.AllPort_identifier()[i].GetText()
+// ExitInput_declaration is called when production Input_declaration is exited.
+func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarationContext) {
+	strs := strings.Split(ctx.List_of_port_identifiers().GetText(), ",")
+	for i := 0; i < len(strs); i++ {
+		s.currentPort.id = strs[i]
 		s.ports = append(s.ports, s.currentPort)
 	}
 }
 
-// ExitList_of_net_identifiers is called when production list_of_net_identifiers is exited.
-func (s *CustomVerilogListener) ExitList_of_net_identifiers(ctx *parser.List_of_net_identifiersContext) {
-	for i := 0; i < len(ctx.AllNet_identifier()); i++ {
-		s.currentPort.id = ctx.AllNet_identifier()[i].GetText()
+// ExitOutput_declaration is called when production Output_declaration is exited.
+func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declarationContext) {
+	strs := strings.Split(ctx.List_of_port_identifiers().GetText(), ",")
+	for i := 0; i < len(strs); i++ {
+		s.currentPort.id = strs[i]
+		s.ports = append(s.ports, s.currentPort)
+	}
+}
+
+// ExitReg_declaration is called when production Reg_declaration is exited.
+func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationContext) {
+	strs := strings.Split(ctx.List_of_variable_identifiers().GetText(), ",")
+	for i := 0; i < len(strs); i++ {
+		s.currentPort.id = strs[i]
 		s.ports = append(s.ports, s.currentPort)
 	}
 }

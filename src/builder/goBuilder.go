@@ -16,7 +16,6 @@ var Source string
 // StartModule はモジュールの初期化を行う
 func StartModule(moduleName string) {
 	ModuleName = moduleName
-	Ports = "type " + moduleName + " struct{\n" + InputIndent(1)
 }
 
 // EndModule はモジュール内の要素を一つにまとめる
@@ -24,7 +23,6 @@ func EndModule() {
 	Source = "package generated\n\n"
 	Source += "import \"github.com/verilog2Go/src/variable\"\n\n"
 	//ポートの宣言
-	Ports += "}\n"
 	Source += Ports + "\n"
 	//コンストラクタ
 	Source += Constructor
@@ -37,14 +35,22 @@ func EndModule() {
 
 //DeclarePorts はポートの宣言を行う
 func DeclarePorts(ports []Port) {
+	if len(ports) < 1 {
+		return
+	}
+	Ports = "type " + ModuleName + " struct{\n" + InputIndent(1)
 	for i := 0; i < len(ports)-1; i++ {
 		Ports += ports[i].id + ", "
 	}
 	Ports += ports[len(ports)-1].id + " variable.BitArray\n"
+	Ports += "}\n"
 }
 
 // CreateConstructor はコンストラクタを生成する
 func CreateConstructor(funcName string, ports []Port) {
+	if len(ports) < 1 {
+		return
+	}
 	//コンストラクタの１行目
 	ConstructorArgument := "func " + strings.Title(funcName) + "("
 	Constructor = InputIndent(1) + "p := new(" + ModuleName + ")\n"
