@@ -38,7 +38,7 @@ func (s *CustomVerilogListener) EnterFunction_case_item(ctx *parser.Function_cas
 func (s *CustomVerilogListener) ExitFunction_case_item(ctx *parser.Function_case_itemContext) {
 	// fmt.Println(len(ctx.AllExpression()))
 	if len(ctx.AllExpression()) != 0 {
-		fmt.Println(toInt(ctx.Expression(0).GetText()))
+		CreateCase(toInt(ctx.Expression(0).GetText()), ctx.Function_statement_or_null().GetText())
 	}
 }
 

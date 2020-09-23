@@ -11,6 +11,7 @@ var Constructor string
 var Observer string
 var Exec string
 var Always string
+var Function string
 var Source string
 
 // StartModule はモジュールの初期化を行う
@@ -31,6 +32,8 @@ func EndModule() {
 	Source += Exec
 	//Always
 	Source += Always
+	//Function
+	Source += Function
 }
 
 //DeclarePorts はポートの宣言を行う
