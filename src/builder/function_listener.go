@@ -16,6 +16,9 @@ func (s *CustomVerilogListener) EnterFunction_declaration(ctx *parser.Function_d
 // ExitFunction_declaration is called when production function_declaration is exited.
 func (s *CustomVerilogListener) ExitFunction_declaration(ctx *parser.Function_declarationContext) {
 	methodName := ctx.Function_identifier().GetText()
+	terms := strings.Split(ctx.Function_item_declaration(0).GetText(), "]")
+	input := terms[1][:len(terms[1])-1]
+	CreateFunction(methodName, input)
 	fmt.Println(methodName)
 }
 
