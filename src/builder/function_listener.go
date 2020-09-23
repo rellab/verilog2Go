@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -18,8 +17,9 @@ func (s *CustomVerilogListener) ExitFunction_declaration(ctx *parser.Function_de
 	methodName := ctx.Function_identifier().GetText()
 	terms := strings.Split(ctx.Function_item_declaration(0).GetText(), "]")
 	input := terms[1][:len(terms[1])-1]
-	CreateFunction(methodName, input)
-	fmt.Println(methodName)
+	terms = strings.Split(ctx.Range_or_type().GetText(), ":")
+	length := terms[0][1:len(terms[0])]
+	CreateFunction(methodName, input, length)
 }
 
 // EnterFunction_case_statement is called when production function_case_statement is entered.
@@ -29,7 +29,6 @@ func (s *CustomVerilogListener) EnterFunction_case_statement(ctx *parser.Functio
 
 // ExitFunction_case_statement is called when production function_case_statement is exited.
 func (s *CustomVerilogListener) ExitFunction_case_statement(ctx *parser.Function_case_statementContext) {
-	fmt.Println(ctx.Expression().GetText())
 	CreateSwitch(ctx.Expression().GetText())
 }
 
@@ -40,7 +39,6 @@ func (s *CustomVerilogListener) EnterFunction_case_item(ctx *parser.Function_cas
 
 // ExitFunction_case_item is called when production function_case_item is exited.
 func (s *CustomVerilogListener) ExitFunction_case_item(ctx *parser.Function_case_itemContext) {
-	// fmt.Println(len(ctx.AllExpression()))
 	if len(ctx.AllExpression()) != 0 {
 		CreateCase(toInt(ctx.Expression(0).GetText()), ctx.Function_statement_or_null().GetText())
 	}

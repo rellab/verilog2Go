@@ -19,8 +19,9 @@ func CreateSwitch(input string) {
 	switchStatement += InputIndent(1) + "}\n"
 }
 
-func CreateFunction(funcName string, input string) {
+func CreateFunction(funcName string, input string, length string) {
 	Function += "\nfunc (" + ModuleName + " *" + ModuleName + ") " + funcName + "(" + input + " variable.BitArray) variable.BitArray {\n"
+	Function += InputIndent(1) + funcName + " := *variable.CreateBitArray(" + length + ", 0)\n"
 	Function += switchStatement
-	Function += InputIndent(1) + "return " + funcName + "\n}"
+	Function += InputIndent(1) + "return " + funcName + "\n}\n"
 }
