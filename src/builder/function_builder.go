@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-var cases string
+var switchStatement, cases string
 
 func CreateCase(exp string, statement string) {
 	cases += InputIndent(1) + "case " + exp + ":\n"
@@ -13,8 +13,14 @@ func CreateCase(exp string, statement string) {
 	cases += InputIndent(2) + "break\n"
 }
 
+func CreateSwitch(input string) {
+	switchStatement += InputIndent(1) + "switch " + input + ".ToInt()" + "{\n"
+	switchStatement += cases
+	switchStatement += InputIndent(1) + "}\n"
+}
+
 func CreateFunction(funcName string, input string) {
-	Function += "\nfunc (" + ModuleName + " *" + ModuleName + ") " + funcName + "(" + input + ") variable.BitArray {\n"
-	Function += cases
+	Function += "\nfunc (" + ModuleName + " *" + ModuleName + ") " + funcName + "(" + input + " variable.BitArray) variable.BitArray {\n"
+	Function += switchStatement
 	Function += InputIndent(1) + "return " + funcName + "\n}"
 }

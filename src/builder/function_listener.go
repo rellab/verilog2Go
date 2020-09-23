@@ -30,6 +30,7 @@ func (s *CustomVerilogListener) EnterFunction_case_statement(ctx *parser.Functio
 // ExitFunction_case_statement is called when production function_case_statement is exited.
 func (s *CustomVerilogListener) ExitFunction_case_statement(ctx *parser.Function_case_statementContext) {
 	fmt.Println(ctx.Expression().GetText())
+	CreateSwitch(ctx.Expression().GetText())
 }
 
 // EnterFunction_case_item is called when production function_case_item is entered.
