@@ -10,7 +10,7 @@ import (
 
 func main() {
 	//ファイル読み取り
-	bytes, err := ioutil.ReadFile("./src/examples/saikoro.v")
+	bytes, err := ioutil.ReadFile("./src/examples/elelock.v")
 	if err != nil {
 		panic(err)
 	}
