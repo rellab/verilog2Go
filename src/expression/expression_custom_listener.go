@@ -38,7 +38,9 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 		return
 	//メソッド
 	case 15:
-		PushValue(ctx.GetText())
+		// fmt.Println(ctx.GetText())
+		// PushValue(ctx.GetText())
+		CreateFunction()
 		break
 	case 16:
 		PushValue(ToInt(ctx.GetText()))

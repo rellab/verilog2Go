@@ -93,3 +93,9 @@ func OperateBinary(op string) {
 	}
 	expression.Push(result)
 }
+
+func CreateFunction() {
+	input := expression.Pop().(string)
+	funcName := expression.Pop().(string)
+	expression.Push(funcName + "(" + input + ")")
+}
