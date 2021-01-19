@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"strings"
 
 	parser "github.com/verilog2Go/antlr/verilog"
@@ -11,7 +10,7 @@ import (
 type Instance struct {
 	moduleName   string
 	instanceName string
-	//ordered_portの場合はports、Named_portの場合はportMapを使う
+	//ordered_portの場合はports、named_portの場合はportMapを使う
 	ports   []string
 	portMap map[string]string
 }
@@ -49,5 +48,9 @@ func (s *CustomVerilogListener) ExitOrdered_port_connection(ctx *parser.Ordered_
 // ExitNamed_port_connection is called when production named_port_connection is entered.
 func (s *CustomVerilogListener) ExitNamed_port_connection(ctx *parser.Named_port_connectionContext) {
 	expression := expression.CompileExpression(ctx.Expression().GetText(), ModuleName)
-	fmt.Println(expression)
+	// fmt.Println(expression)
+	if !strings.Contains(expression, "Get(") && !strings.Contains(expression, "CreateBitArray(") {
+		expression = "&" + expression
+	}
+	instance.portMap[ctx.Port_identifier().GetText()] = expression
 }
