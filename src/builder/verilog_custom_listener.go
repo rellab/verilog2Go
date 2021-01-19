@@ -82,6 +82,15 @@ func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationC
 	}
 }
 
+// ExitNet_declaration is called when production Reg_declaration is exited.
+func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationContext) {
+	strs := strings.Split(ctx.List_of_net_identifiers().GetText(), ",")
+	for i := 0; i < len(strs); i++ {
+		s.currentPort.id = strs[i]
+		s.ports = append(s.ports, s.currentPort)
+	}
+}
+
 // ExitRange_ is called when production range_ is exited.
 func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 	//文字列をintに変換

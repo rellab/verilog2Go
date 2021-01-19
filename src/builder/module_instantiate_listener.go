@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"fmt"
 	"strings"
 
 	parser "github.com/verilog2Go/antlr/verilog"
@@ -47,4 +48,6 @@ func (s *CustomVerilogListener) ExitOrdered_port_connection(ctx *parser.Ordered_
 
 // ExitNamed_port_connection is called when production named_port_connection is entered.
 func (s *CustomVerilogListener) ExitNamed_port_connection(ctx *parser.Named_port_connectionContext) {
+	expression := expression.CompileExpression(ctx.Expression().GetText(), ModuleName)
+	fmt.Println(expression)
 }
