@@ -78,13 +78,11 @@ func CreateInstance(instance Instance) {
 	Exec += InputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "("
 	for i, exp := range instance.ports {
 		Exec += exp
-		if i == len(instance.ports)-1 {
-			Exec += ")\n"
-		} else {
+		if i < len(instance.ports)-1 {
 			Exec += ", "
 		}
 	}
-	Exec += InputIndent(1) + instance.instanceName + ".Exec()\n"
+	Exec += ")\n" + InputIndent(1) + instance.instanceName + ".Exec()\n"
 }
 
 func InputIndent(indent int) string {

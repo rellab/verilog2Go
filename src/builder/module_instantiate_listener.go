@@ -21,6 +21,7 @@ var instance Instance
 func (s *CustomVerilogListener) EnterModule_instantiation(ctx *parser.Module_instantiationContext) {
 	//インスタンスの初期化
 	instance = Instance{}
+	instance.portMap = map[string]string{}
 }
 
 // ExitModule_instantiation is called when production module_instantiation is exited.
@@ -52,5 +53,6 @@ func (s *CustomVerilogListener) ExitNamed_port_connection(ctx *parser.Named_port
 	if !strings.Contains(expression, "Get(") && !strings.Contains(expression, "CreateBitArray(") {
 		expression = "&" + expression
 	}
+	// fmt.Println(ctx.Port_identifier().GetText())
 	instance.portMap[ctx.Port_identifier().GetText()] = expression
 }
