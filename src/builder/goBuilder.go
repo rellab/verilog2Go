@@ -9,6 +9,7 @@ var Ports string
 var Constructor string
 var Observer string
 var Exec string
+var PreAlways string
 var Always string
 var Function string
 var Source string
@@ -29,6 +30,8 @@ func EndModule() {
 	//Exec
 	Exec = "func (" + ModuleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
 	Source += Exec
+	//PreAlways
+	Source += PreAlways
 	//Always
 	Source += Always
 	//Function

@@ -21,11 +21,15 @@ func AddNegedgeObserver(id string) {
 }
 
 func CreateAlways() {
-	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(){\n"
+	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways() []variable.BitArray{\n"
+	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(vars []variable.BitArray){\n"
 }
 
 func EndAlways() {
-	Always += leftBlock + rightBlock
+
+	PreAlways += leftBlock + createPreAlwaysReturn() + "}\n"
+
+	Always += rightBlock
 	Always += InputIndent(1) + ModuleName + ".Exec()\n}\n"
 }
 
@@ -53,9 +57,10 @@ func DeclarateVariable(exp string) {
 	nonBlockingStatementCount++
 	//一次格納する変数
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
+	alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
 	slice := strings.Split(exp, "<=")
 
-	Always += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
+	PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
 	right := expression.CompileExpression(slice[1], ModuleName)
 	if strings.Contains(right[len(right)-7:len(right)], "Get(") {
 		right = "*" + right
@@ -65,5 +70,18 @@ func DeclarateVariable(exp string) {
 		}
 	}
 	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + right + ")\n"
-	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + temp + ")\n"
+	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + alwaysTemp + ")\n"
+}
+
+func createPreAlwaysReturn() string {
+	result := InputIndent(1) + "return []variable.BitArray{"
+	for i := 1; i <= nonBlockingStatementCount; i++ {
+		result += "var" + strconv.Itoa(nonBlockingStatementCount)
+		if i != nonBlockingStatementCount {
+			result += ", "
+		} else {
+			result += "}\n"
+		}
+	}
+	return result
 }

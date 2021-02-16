@@ -1,12 +1,12 @@
 package variable
 
 type PosedgeObserver interface {
-	PreAlways()
+	PreAlways() []BitArray
 	Always([]BitArray)
 }
 
 type NegedgeObserver interface {
-	PreAlways()
+	PreAlways() []BitArray
 	Always([]BitArray)
 }
 
