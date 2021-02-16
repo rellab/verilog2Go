@@ -1,11 +1,13 @@
 package variable
 
 type PosedgeObserver interface {
-	Always()
+	PreAlways()
+	Always([]BitArray)
 }
 
 type NegedgeObserver interface {
-	Always()
+	PreAlways()
+	Always([]BitArray)
 }
 
 func (ba *BitArray) AddPosedgeObserver(po PosedgeObserver) {
@@ -17,20 +19,16 @@ func (ba *BitArray) AddNegedgeObserver(no NegedgeObserver) {
 }
 
 func (ba BitArray) NotifyPosedgeObserver() {
-	// for pos := range ba.pos {
-	// 	fmt.Println(pos)
-	// }
-	// for i := 0; i < len(ba.pos); i++ {
+	// for i := len(ba.pos) - 1; i >= 0; i-- {
 	// 	ba.pos[i].Always()
 	// }
-	for i := len(ba.pos) - 1; i >= 0; i-- {
-		ba.pos[i].Always()
-	}
+
+	// 全てのPreAlways終了後にAlwaysを実行する
 }
 
 func (ba BitArray) NotifyNegedgeObserver() {
 	// ba.neg.Always()
-	for i := 0; i < len(ba.neg); i++ {
-		ba.neg[i].Always()
-	}
+	// for i := 0; i < len(ba.neg); i++ {
+	// 	ba.neg[i].Always()
+	// }
 }
