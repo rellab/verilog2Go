@@ -76,7 +76,7 @@ func DeclarateVariable(exp string) {
 func createPreAlwaysReturn() string {
 	result := InputIndent(1) + "return []variable.BitArray{"
 	for i := 1; i <= nonBlockingStatementCount; i++ {
-		result += "var" + strconv.Itoa(nonBlockingStatementCount)
+		result += "var" + strconv.Itoa(i)
 		if i != nonBlockingStatementCount {
 			result += ", "
 		} else {
