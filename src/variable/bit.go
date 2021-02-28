@@ -23,12 +23,13 @@ func (ba *BitArray) InitBitArray(length int) {
 
 //Set はBitArrayのBitsに値をセットする
 func (ba *BitArray) Set(value int) {
-	notify(*ba, value)
+	preValue := ba.ToInt()
 	length := len(ba.bits)
 	comparison := 1 << length
 	for i := 1; i <= length; i++ {
 		ba.bits[length-i].value = (((value << i) & comparison) >> length) == 1
 	}
+	notify(*ba, preValue)
 }
 
 // CreateBitArray はvalueの値を持つBirArrayを返す
@@ -72,10 +73,10 @@ func (ba BitArray) ToInt() int {
 	return ret
 }
 
-func notify(a BitArray, b int) {
-	if a.ToInt() < b && a.pos != nil {
+func notify(a BitArray, preValue int) {
+	if a.ToInt() > preValue && a.pos != nil {
 		a.NotifyPosedgeObserver()
-	} else if a.ToInt() > b && a.neg != nil {
+	} else if a.ToInt() < preValue && a.neg != nil {
 		a.NotifyNegedgeObserver()
 	}
 }
@@ -87,7 +88,6 @@ func (ba BitArray) Add(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a+b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -98,7 +98,6 @@ func (ba BitArray) Sub(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a-b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -109,7 +108,6 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a*b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -120,7 +118,6 @@ func (ba BitArray) Bitxor(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a^b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -131,7 +128,6 @@ func (ba BitArray) Bitand(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a&b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -142,7 +138,6 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result = result.Calc(a|b, length)
-	notify(ba, result.ToInt())
 	return result
 }
 
@@ -153,7 +148,6 @@ func (ba BitArray) Not() BitArray {
 	for i := 0; i < length; i++ {
 		result.bits[i].value = !ba.bits[i].value
 	}
-	notify(ba, result.ToInt())
 	return result
 }
 
