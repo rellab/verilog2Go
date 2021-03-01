@@ -33,20 +33,20 @@ func (ba *BitArray) Set(value int) {
 }
 
 // CreateBitArray はvalueの値を持つBirArrayを返す
-func CreateBitArray(length int, value int) *BitArray {
+func CreateBitArray(length int, value int) BitArray {
 	var result BitArray
 	result.InitBitArray(length)
 	result.Set(value)
-	return &result
+	return result
 }
 
 // Get はindexで指定したBitを持つBitArrayを返す
-func (ba BitArray) Get(index int) *BitArray {
+func (ba BitArray) Get(index int) BitArray {
 	var result BitArray
 	result.InitBitArray(1)
 	//スライスを代入
 	result.bits = ba.bits[index : index+1]
-	return &result
+	return result
 }
 
 // Calc はvalueの値をもつBitArrayを返す

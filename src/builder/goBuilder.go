@@ -70,14 +70,16 @@ func CreateExec(id string, expression string) {
 // CreateInstance はインスタンス化を生成する
 func CreateInstance(instance Instance) {
 	// fmt.Println(instance.instanceName)
-	Exec += InputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "("
-	for i, exp := range instance.ports {
-		Exec += exp
-		if i < len(instance.ports)-1 {
-			Exec += ", "
-		}
+	Exec += InputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "(&" + instance.moduleName + "{"
+	for _, exp := range instance.ports {
+		Exec += exp + ", "
 	}
-	Exec += ")\n" + InputIndent(1) + instance.instanceName + ".Exec()\n"
+
+	for key, exp := range instance.portMap {
+		Exec += key + " : " + exp + ", "
+	}
+	Exec = Exec[:len(Exec)-2]
+	Exec += "})\n" + InputIndent(1) + instance.instanceName + ".Exec()\n"
 }
 
 func InputIndent(indent int) string {

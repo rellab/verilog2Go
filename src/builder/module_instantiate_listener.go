@@ -49,8 +49,5 @@ func (s *CustomVerilogListener) ExitOrdered_port_connection(ctx *parser.Ordered_
 // ExitNamed_port_connection is called when production named_port_connection is entered.
 func (s *CustomVerilogListener) ExitNamed_port_connection(ctx *parser.Named_port_connectionContext) {
 	expression := expression.CompileExpression(ctx.Expression().GetText(), ModuleName)
-	if !strings.Contains(expression, "Get(") && !strings.Contains(expression, "CreateBitArray(") {
-		expression = "&" + expression
-	}
 	instance.portMap[ctx.Port_identifier().GetText()] = expression
 }
