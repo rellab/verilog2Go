@@ -13,11 +13,11 @@ var leftBlock string
 var rightBlock string
 
 func AddPosedgeObserver(id string) {
-	Observer += InputIndent(1) + id + ".AddPosedgeObserver(p)\n"
+	Observer += InputIndent(1) + "args." + id + ".AddPosedgeObserver(args)\n"
 }
 
 func AddNegedgeObserver(id string) {
-	Observer += InputIndent(1) + id + ".AddNegedgeObserver(p)\n"
+	Observer += InputIndent(1) + "args." + id + ".AddNegedgeObserver(args)\n"
 }
 
 func CreateAlways() {
