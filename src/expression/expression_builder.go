@@ -54,7 +54,7 @@ func OperateUniary(op string) {
 // OperateBinary は２項演算を行う
 func OperateBinary(op string) {
 	left := expression.Pop().(string)
-	right := expression.Pop().(string)
+	right := "*" + expression.Pop().(string)
 	var result string = ""
 	switch op {
 	case "+":

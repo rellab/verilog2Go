@@ -47,7 +47,7 @@ func DeclarePorts(ports []Port) {
 	for i := 0; i < len(ports)-1; i++ {
 		Ports += ports[i].id + ", "
 	}
-	Ports += ports[len(ports)-1].id + " variable.BitArray\n"
+	Ports += ports[len(ports)-1].id + " *variable.BitArray\n"
 	Ports += "}\n"
 }
 
