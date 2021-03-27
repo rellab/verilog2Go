@@ -35,7 +35,7 @@ func (ba *BitArray) Set(value int) {
 // CreateBitArray はvalueの値を持つBirArrayを返す
 func CreateBitArray(length int, value int) *BitArray {
 	var result BitArray
-	result.InitBitArray(length)
+	result.InitBitArray(length+1)
 	result.Set(value)
 	return &result
 }

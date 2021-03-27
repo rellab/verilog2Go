@@ -26,7 +26,8 @@ func (ba BitArray) NotifyPosedgeObserver() {
 	}
 	// fmt.Println("end")
 	// Alwaysを実行する
-	for i := len(ba.pos) - 1; i >= 0; i-- {
+	for i := 0; i < len(ba.pos); i++ {
+		// for i := len(ba.pos) - 1; i >= 0; i-- {
 		ba.pos[i].Always(bitArrays[i])
 	}
 }
