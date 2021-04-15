@@ -61,6 +61,7 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 	for i := 0; i < len(strs); i++ {
 		s.currentPort.id = strs[i]
 		s.ports = append(s.ports, s.currentPort)
+		DeclareInput(s.currentPort)
 	}
 }
 

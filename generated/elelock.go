@@ -22,10 +22,10 @@ func (elelock *elelock) Exec() {
 }
 
 func (elelock *elelock) PreAlways() []variable.BitArray{
-    var1 := *variable.CreateBitArray(8, 0)
-    var2 := *variable.CreateBitArray(8, 0)
-    var3 := *variable.CreateBitArray(8, 0)
-    var4 := *variable.CreateBitArray(8, 0)
+    var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
+    var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
+    var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
+    var4 := *variable.CreateBitArray(9, elelock.tenkey.ToInt())
     var5 := *variable.CreateBitArray(8, 0)
     var6 := *variable.CreateBitArray(8, 0)
     var7 := *variable.CreateBitArray(8, 0)
@@ -34,101 +34,113 @@ func (elelock *elelock) PreAlways() []variable.BitArray{
     var10 := *variable.CreateBitArray(8, 0)
     var11 := *variable.CreateBitArray(8, 0)
     var12 := *variable.CreateBitArray(8, 0)
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        var1.Assign(variable.CreateBitArray(4, 15))
-        var2.Assign(variable.CreateBitArray(4, 15))
-        var3.Assign(variable.CreateBitArray(4, 15))
-        var4.Assign(variable.CreateBitArray(4, 15))
+    var13 := *variable.CreateBitArray(8, 0)
+    var14 := *variable.CreateBitArray(8, 0)
+    var15 := *variable.CreateBitArray(8, 0)
+    var16 := *variable.CreateBitArray(8, 0)
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        var5.Assign(*variable.CreateBitArray(4, 15))
+        var6.Assign(*variable.CreateBitArray(4, 15))
+        var7.Assign(*variable.CreateBitArray(4, 15))
+        var8.Assign(*variable.CreateBitArray(4, 15))
     } else{
-        if variable.CreateBitArray(1, 1).Equal(*elelock.close) {
-            var5.Assign(variable.CreateBitArray(4, 15))
-            var6.Assign(variable.CreateBitArray(4, 15))
-            var7.Assign(variable.CreateBitArray(4, 15))
-            var8.Assign(variable.CreateBitArray(4, 15))
+        if variable.CreateBitArray(1, 1).Equal(var3) {
+            var9.Assign(*variable.CreateBitArray(4, 15))
+            var10.Assign(*variable.CreateBitArray(4, 15))
+            var11.Assign(*variable.CreateBitArray(4, 15))
+            var12.Assign(*variable.CreateBitArray(4, 15))
         } else{
             if variable.CreateBitArray(1, 1).Equal(*elelock.key_enbl) {
-                var9.Assign(*elelock.key.Get(2))
-                var10.Assign(*elelock.key.Get(1))
-                var11.Assign(*elelock.key.Get(0))
-                var12.Assign(elelock.keyenc(elelock.tenkey))
+                var13.Assign(*elelock.key.Get(2))
+                var14.Assign(*elelock.key.Get(1))
+                var15.Assign(*elelock.key.Get(0))
+                var16.Assign(elelock.keyenc(elelock.tenkey))
             }
         }
     }
-    return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11, var12}
+    return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11, var12, var13, var14, var15, var16}
 }
 func (elelock *elelock) PreAlways() []variable.BitArray{
-    var1 := *variable.CreateBitArray(8, 0)
-    var2 := *variable.CreateBitArray(8, 0)
-    var3 := *variable.CreateBitArray(8, 0)
-    var4 := *variable.CreateBitArray(8, 0)
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        var1.Assign(*variable.CreateBitArray(1, 0))
-        var2.Assign(*variable.CreateBitArray(1, 0))
+    var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
+    var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
+    var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
+    var4 := *variable.CreateBitArray(9, elelock.tenkey.ToInt())
+    var5 := *variable.CreateBitArray(8, 0)
+    var6 := *variable.CreateBitArray(8, 0)
+    var7 := *variable.CreateBitArray(8, 0)
+    var8 := *variable.CreateBitArray(8, 0)
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        var5.Assign(*variable.CreateBitArray(1, 0))
+        var6.Assign(*variable.CreateBitArray(1, 0))
     } else{
-        var3.Assign(elelock.ke1)
-        var4.Assign(elelock.tenkey.Reductionor())
+        var7.Assign(elelock.ke1)
+        var8.Assign(elelock.tenkey.Reductionor())
     }
-    return []variable.BitArray{var1, var2, var3, var4}
+    return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7, var8}
 }
 func (elelock *elelock) PreAlways() []variable.BitArray{
-    var1 := *variable.CreateBitArray(8, 0)
-    var2 := *variable.CreateBitArray(8, 0)
-    var3 := *variable.CreateBitArray(8, 0)
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        var1.Assign(*variable.CreateBitArray(1, 1))
+    var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
+    var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
+    var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
+    var4 := *variable.CreateBitArray(9, elelock.tenkey.ToInt())
+    var5 := *variable.CreateBitArray(8, 0)
+    var6 := *variable.CreateBitArray(8, 0)
+    var7 := *variable.CreateBitArray(8, 0)
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        var5.Assign(*variable.CreateBitArray(1, 1))
     } else{
-        if variable.CreateBitArray(1, 1).Equal(*elelock.close) {
-            var2.Assign(*variable.CreateBitArray(1, 1))
+        if variable.CreateBitArray(1, 1).Equal(var3) {
+            var6.Assign(*variable.CreateBitArray(1, 1))
         } else{
             if variable.CreateBitArray(1, 1).Equal(*elelock.match) {
-                var3.Assign(*variable.CreateBitArray(1, 0))
+                var7.Assign(*variable.CreateBitArray(1, 0))
             }
         }
     }
-    return []variable.BitArray{var1, var2, var3}
+    return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7}
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        elelock.key[3].Assign(vars[0])
-        elelock.key[2].Assign(vars[1])
-        elelock.key[1].Assign(vars[2])
-        elelock.key[0].Assign(vars[3])
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        elelock.key[3].Assign(vars[4])
+        elelock.key[2].Assign(vars[5])
+        elelock.key[1].Assign(vars[6])
+        elelock.key[0].Assign(vars[7])
     } else{
-        if variable.CreateBitArray(1, 1).Equal(*elelock.close) {
-            elelock.key[3].Assign(vars[4])
-            elelock.key[2].Assign(vars[5])
-            elelock.key[1].Assign(vars[6])
-            elelock.key[0].Assign(vars[7])
+        if variable.CreateBitArray(1, 1).Equal(var3) {
+            elelock.key[3].Assign(vars[8])
+            elelock.key[2].Assign(vars[9])
+            elelock.key[1].Assign(vars[10])
+            elelock.key[0].Assign(vars[11])
         } else{
             if variable.CreateBitArray(1, 1).Equal(*elelock.key_enbl) {
-                elelock.key[3].Assign(vars[8])
-                elelock.key[2].Assign(vars[9])
-                elelock.key[1].Assign(vars[10])
-                elelock.key[0].Assign(vars[11])
+                elelock.key[3].Assign(vars[12])
+                elelock.key[2].Assign(vars[13])
+                elelock.key[1].Assign(vars[14])
+                elelock.key[0].Assign(vars[15])
             }
         }
     }
     elelock.Exec()
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        elelock.ke2.Assign(vars[0])
-        elelock.ke1.Assign(vars[1])
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        elelock.ke2.Assign(vars[4])
+        elelock.ke1.Assign(vars[5])
     } else{
-        elelock.ke2.Assign(vars[2])
-        elelock.ke1.Assign(vars[3])
+        elelock.ke2.Assign(vars[6])
+        elelock.ke1.Assign(vars[7])
     }
     elelock.Exec()
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(*elelock.reset) {
-        elelock.lock.Assign(vars[0])
+    if variable.CreateBitArray(1, 1).Equal(var2) {
+        elelock.lock.Assign(vars[4])
     } else{
-        if variable.CreateBitArray(1, 1).Equal(*elelock.close) {
-            elelock.lock.Assign(vars[1])
+        if variable.CreateBitArray(1, 1).Equal(var3) {
+            elelock.lock.Assign(vars[5])
         } else{
             if variable.CreateBitArray(1, 1).Equal(*elelock.match) {
-                elelock.lock.Assign(vars[2])
+                elelock.lock.Assign(vars[6])
             }
         }
     }
@@ -172,13 +184,7 @@ func (elelock *elelock) keyenc(sw variable.BitArray) variable.BitArray {
     return keyenc
 }
 
- keyenc.Set(6)
-        break
-    case 128:
-        keyenc.Set(7)
-        break
-    case 256:
-        keyenc.Set(8)
+c.Set(8)
         break
     case 512:
         keyenc.Set(9)

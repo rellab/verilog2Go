@@ -3,6 +3,7 @@ package builder
 import (
 	"strconv"
 	"strings"
+
 	"github.com/verilog2Go/src/expression"
 )
 
@@ -23,6 +24,7 @@ func CreateAlways() {
 	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways() []variable.BitArray{\n"
 	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(vars []variable.BitArray){\n"
 	nonBlockingStatementCount = 0
+	declarateInput()
 }
 
 func EndAlways() {
@@ -41,8 +43,29 @@ func IfStart() {
 }
 
 func IfStatement(conditionalStatement string) {
-	leftBlock += InputIndent(IfDepth) + "if " + conditionalStatement + " {\n"
-	rightBlock += InputIndent(IfDepth) + "if " + conditionalStatement + " {\n"
+	leftConditionalStatement := checkInputSignal(conditionalStatement)
+	rightConditionalStatement := checkInput(conditionalStatement)
+	leftBlock += InputIndent(IfDepth) + "if " + leftConditionalStatement + " {\n"
+	rightBlock += InputIndent(IfDepth) + "if " + rightConditionalStatement + " {\n"
+}
+
+// ifの条件内にinput信号があれば変数に変換する
+func checkInputSignal(conditionalStatement string) string {
+	for i, v := range Inputs {
+		if strings.Contains(conditionalStatement, ModuleName+"."+v.id) {
+			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, ModuleName+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
+		}
+	}
+	return conditionalStatement
+}
+
+func checkInput(conditionalStatement string) string {
+	for i, v := range Inputs {
+		if strings.Contains(conditionalStatement, ModuleName+"."+v.id) {
+			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, ModuleName+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
+		}
+	}
+	return conditionalStatement
 }
 
 func ElseStatement() {
@@ -54,6 +77,14 @@ func ElseStatement() {
 func EndIfStatement() {
 	leftBlock += InputIndent(IfDepth) + "}\n"
 	rightBlock += InputIndent(IfDepth) + "}\n"
+}
+
+func declarateInput() {
+	for _, v := range Inputs {
+		nonBlockingStatementCount++
+		temp := "var" + strconv.Itoa(nonBlockingStatementCount)
+		PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(" + strconv.Itoa(v.length) + ", " + ModuleName + "." + v.id + ".ToInt())\n"
+	}
 }
 
 func DeclarateVariable(exp string) {
@@ -68,7 +99,7 @@ func DeclarateVariable(exp string) {
 	if strings.Contains(right[len(right)-7:len(right)], "Get(") {
 		right = "*" + right
 	} else if len(right) > 20 {
-		if strings.Contains(right[len(right)-20:len(right)], "CreateBitArray(") {
+		if strings.Contains(right[len(right)-20:len(right)], "CreateBitArray(") || strings.Contains(right[len(right)-21:len(right)], "CreateBitArray(") {
 			right = "*" + right
 		}
 	}

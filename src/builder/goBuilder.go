@@ -6,6 +6,7 @@ import (
 
 var ModuleName string
 var Ports string
+var Inputs []Port
 var Constructor string
 var Observer string
 var Exec string
@@ -49,6 +50,11 @@ func DeclarePorts(ports []Port) {
 	}
 	Ports += ports[len(ports)-1].id + " *variable.BitArray\n"
 	Ports += "}\n"
+}
+
+// DeclareInput はinput信号の配列を作成する
+func DeclareInput(input Port) {
+	Inputs = append(Inputs, input)
 }
 
 // CreateConstructor はコンストラクタを生成する
