@@ -2,7 +2,6 @@ package builder
 
 import (
 	"strings"
-
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/expression"
 )
@@ -20,6 +19,7 @@ func (s *CustomVerilogListener) EnterProcedural_timing_control_statement(ctx *pa
 // ExitProcedural_timing_control_statement is called when production procedural_timing_control_statement is exited.
 func (s *CustomVerilogListener) ExitProcedural_timing_control_statement(ctx *parser.Procedural_timing_control_statementContext) {
 	//ブロック終了
+	statementCount = 0
 	EndAlways()
 }
 

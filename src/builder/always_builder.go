@@ -3,7 +3,6 @@ package builder
 import (
 	"strconv"
 	"strings"
-
 	"github.com/verilog2Go/src/expression"
 )
 
@@ -23,6 +22,7 @@ func AddNegedgeObserver(id string) {
 func CreateAlways() {
 	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways() []variable.BitArray{\n"
 	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(vars []variable.BitArray){\n"
+	nonBlockingStatementCount = 0
 }
 
 func EndAlways() {
@@ -31,6 +31,9 @@ func EndAlways() {
 
 	Always += rightBlock
 	Always += InputIndent(1) + ModuleName + ".Exec()\n}\n"
+
+	leftBlock = ""
+	rightBlock = ""
 }
 
 func IfStart() {
