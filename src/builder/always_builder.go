@@ -96,12 +96,8 @@ func DeclarateVariable(exp string) {
 
 	PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
 	right := expression.CompileExpression(slice[1], ModuleName)
-	if strings.Contains(right[len(right)-7:len(right)], "Get(") {
+	if strings.Contains(right, "Get(") || strings.Contains(right, "CreateBitArray(") || !(strings.Contains(right, "(")) {
 		right = "*" + right
-	} else if len(right) > 20 {
-		if strings.Contains(right[len(right)-20:len(right)], "CreateBitArray(") || strings.Contains(right[len(right)-21:len(right)], "CreateBitArray(") {
-			right = "*" + right
-		}
 	}
 	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + right + ")\n"
 	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + alwaysTemp + ")\n"

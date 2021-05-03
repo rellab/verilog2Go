@@ -35,7 +35,7 @@ func (ba *BitArray) Set(value int) {
 // CreateBitArray はvalueの値を持つBirArrayを返す
 func CreateBitArray(length int, value int) *BitArray {
 	var result BitArray
-	result.InitBitArray(length+1)
+	result.InitBitArray(length + 1)
 	result.Set(value)
 	return &result
 }
@@ -141,12 +141,24 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	return result
 }
 
-func (ba BitArray) Not() BitArray {
+func (ba *BitArray) Not() BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result.InitBitArray(length)
 	for i := 0; i < length; i++ {
 		result.bits[i].value = !ba.bits[i].value
+	}
+	return result
+}
+
+func (ba *BitArray) Reductionor() BitArray {
+	length := len(ba.bits)
+	var result BitArray
+	result.InitBitArray(1)
+	for i := 0; i < length; i++ {
+		if result.bits[i].value {
+			result.Set(1)
+		}
 	}
 	return result
 }

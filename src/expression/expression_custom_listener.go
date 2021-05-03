@@ -30,7 +30,6 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 		break
 	//値
 	case 13:
-		// fmt.Println(ctx.GetId().GetText())
 		PushValue(ToInt(ctx.GetId().GetText()))
 		break
 	//()内の演算
@@ -38,13 +37,12 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 		return
 	//メソッド
 	case 15:
-		// fmt.Println(ctx.GetText())
-		// PushValue(ctx.GetText())
 		CreateFunction()
 		break
 	case 16:
 		PushValue(ToInt(ctx.GetText()))
 		break
+	//数字
 	case 17:
 		AddValue(ToInt(ctx.GetId().GetText()))
 	default:

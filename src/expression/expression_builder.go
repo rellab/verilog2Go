@@ -1,6 +1,8 @@
 package expression
 
 import (
+	"strings"
+
 	"github.com/golang-collections/collections/stack"
 )
 
@@ -54,7 +56,21 @@ func OperateUniary(op string) {
 // OperateBinary は２項演算を行う
 func OperateBinary(op string) {
 	left := expression.Pop().(string)
-	right := "*" + expression.Pop().(string)
+	right := expression.Pop().(string)
+	if !(strings.Contains(right, "Add(") ||
+		strings.Contains(right, "Sub(") ||
+		strings.Contains(right, "Mul(") ||
+		strings.Contains(right, "Div(") ||
+		strings.Contains(right, "And(") ||
+		strings.Contains(right, "Equal(") ||
+		strings.Contains(right, "BItxor(") ||
+		strings.Contains(right, "Bitor(") ||
+		strings.Contains(right, "Bitand(") ||
+		strings.Contains(right, "Not(") ||
+		strings.Contains(right, "Reductionor(") ||
+		strings.Contains(right, "Set(")) {
+		right = "*" + right
+	}
 	var result string = ""
 	switch op {
 	case "+":
@@ -96,6 +112,20 @@ func OperateBinary(op string) {
 
 func CreateFunction() {
 	input := expression.Pop().(string)
+	if !(strings.Contains(input, "Add(") ||
+		strings.Contains(input, "Sub(") ||
+		strings.Contains(input, "Mul(") ||
+		strings.Contains(input, "Div(") ||
+		strings.Contains(input, "And(") ||
+		strings.Contains(input, "Equal(") ||
+		strings.Contains(input, "BItxor(") ||
+		strings.Contains(input, "Bitor(") ||
+		strings.Contains(input, "Bitand(") ||
+		strings.Contains(input, "Not(") ||
+		strings.Contains(input, "Reductionor(") ||
+		strings.Contains(input, "Set(")) {
+		input = "*" + input
+	}
 	funcName := expression.Pop().(string)
 	expression.Push(funcName + "(" + input + ")")
 }
