@@ -45,8 +45,8 @@ func IfStart() {
 func IfStatement(conditionalStatement string) {
 	leftConditionalStatement := checkInputSignal(conditionalStatement)
 	rightConditionalStatement := checkInput(conditionalStatement)
-	leftBlock += InputIndent(IfDepth) + "if " + leftConditionalStatement + " {\n"
-	rightBlock += InputIndent(IfDepth) + "if " + rightConditionalStatement + " {\n"
+	leftBlock += InputIndent(IfDepth) + "if variable.CheckBit(" + leftConditionalStatement + ") {\n"
+	rightBlock += InputIndent(IfDepth) + "if variable.CheckBit(" + rightConditionalStatement + ") {\n"
 }
 
 // ifの条件内にinput信号があれば変数に変換する

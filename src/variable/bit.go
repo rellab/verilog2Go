@@ -111,6 +111,16 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	return result
 }
 
+func (ba BitArray) And(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a == b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
 //Bitxor はポート同士の排他的論理和を返す
 func (ba BitArray) Bitxor(input BitArray) BitArray {
 	a := ba.ToInt()
@@ -164,10 +174,19 @@ func (ba *BitArray) Reductionor() BitArray {
 }
 
 //Equal はBitArrayの持つ値が等しいかどうかを返す
-func (ba BitArray) Equal(input BitArray) bool {
+func (ba BitArray) Equal(input BitArray) BitArray {
 	a := ba.ToInt()
 	b := input.ToInt()
 	if a == b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func CheckBit(input BitArray) bool {
+	a := input.ToInt()
+	if a > 0 {
 		return true
 	} else {
 		return false
@@ -176,9 +195,5 @@ func (ba BitArray) Equal(input BitArray) bool {
 
 // Assign は引数のBitArrayを割り当てる
 func (ba *BitArray) Assign(result BitArray) {
-	// length := len(ba.bits)
-	// for i := 0; i < length; i++ {
-	// 	ba.bits[i].value = result.bits[i].value
-	// }
 	ba.Set(result.ToInt())
 }
