@@ -58,14 +58,22 @@ func DeclareInput(input Port) {
 }
 
 // CreateConstructor はコンストラクタを生成する
-func CreateConstructor(funcName string, ports []Port) {
+func CreateConstructor(funcName string, ports []Port, params []Param) {
 	if len(ports) < 1 {
 		return
 	}
 	//コンストラクタの１行目
 	ConstructorArgument := "func " + strings.Title(funcName) + "(args *" + ModuleName + ") " + ModuleName + "{\n"
 
-	Constructor = ConstructorArgument + Observer + InputIndent(1) + "return *args\n}\n\n"
+	Constructor = ConstructorArgument + Observer
+
+	if len(params) > 0 {
+		for _, v := range params {
+			Constructor += InputIndent(1) + "args." + v.id + " = " + v.initiation + "\n"
+		}
+	}
+
+	Constructor += InputIndent(1) + "return *args\n}\n\n"
 }
 
 // CreateExec はExecを生成する

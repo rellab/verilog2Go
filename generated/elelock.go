@@ -3,7 +3,7 @@ package generated
 import "github.com/verilog2Go/src/variable"
 
 type elelock struct{
-    clk, reset, close, tenkey, lock, ke1, ke2, key[0:3], match, key_enbl *variable.BitArray
+    clk, reset, close, tenkey, lock, ke1, ke2, key[0:3], match, key_enbl, SECRET_3, SECRET_2, SECRET_1, SECRET_0 *variable.BitArray
 }
 
 func Elelock(args *elelock) elelock{
@@ -13,6 +13,10 @@ func Elelock(args *elelock) elelock{
     args.reset.AddPosedgeObserver(args)
     args.clk.AddPosedgeObserver(args)
     args.reset.AddPosedgeObserver(args)
+    args.SECRET_3 = variable.CreateBitArray(4, 5)
+    args.SECRET_2 = variable.CreateBitArray(4, 9)
+    args.SECRET_1 = variable.CreateBitArray(4, 6)
+    args.SECRET_0 = variable.CreateBitArray(4, 3)
     return *args
 }
 
@@ -100,13 +104,13 @@ func (elelock *elelock) PreAlways() []variable.BitArray{
     return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7}
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(var2) {
+    if variable.CreateBitArray(1, 1).Equal(vars[1]) {
         elelock.key[3].Assign(vars[4])
         elelock.key[2].Assign(vars[5])
         elelock.key[1].Assign(vars[6])
         elelock.key[0].Assign(vars[7])
     } else{
-        if variable.CreateBitArray(1, 1).Equal(var3) {
+        if variable.CreateBitArray(1, 1).Equal(vars[2]) {
             elelock.key[3].Assign(vars[8])
             elelock.key[2].Assign(vars[9])
             elelock.key[1].Assign(vars[10])
@@ -123,7 +127,7 @@ func (elelock *elelock) Always(vars []variable.BitArray){
     elelock.Exec()
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(var2) {
+    if variable.CreateBitArray(1, 1).Equal(vars[1]) {
         elelock.ke2.Assign(vars[4])
         elelock.ke1.Assign(vars[5])
     } else{
@@ -133,10 +137,10 @@ func (elelock *elelock) Always(vars []variable.BitArray){
     elelock.Exec()
 }
 func (elelock *elelock) Always(vars []variable.BitArray){
-    if variable.CreateBitArray(1, 1).Equal(var2) {
+    if variable.CreateBitArray(1, 1).Equal(vars[1]) {
         elelock.lock.Assign(vars[4])
     } else{
-        if variable.CreateBitArray(1, 1).Equal(var3) {
+        if variable.CreateBitArray(1, 1).Equal(vars[2]) {
             elelock.lock.Assign(vars[5])
         } else{
             if variable.CreateBitArray(1, 1).Equal(*elelock.match) {
@@ -176,15 +180,6 @@ func (elelock *elelock) keyenc(sw variable.BitArray) variable.BitArray {
         break
     case 256:
         keyenc.Set(8)
-        break
-    case 512:
-        keyenc.Set(9)
-        break
-    }
-    return keyenc
-}
-
-c.Set(8)
         break
     case 512:
         keyenc.Set(9)

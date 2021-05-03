@@ -12,6 +12,7 @@ import (
 type CustomVerilogListener struct {
 	*parser.BaseVerilogListener
 	ports       []Port
+	params      []Param
 	currentPort Port
 }
 
@@ -19,6 +20,11 @@ type CustomVerilogListener struct {
 type Port struct {
 	id     string
 	length int
+}
+
+type Param struct {
+	id         string
+	initiation string
 }
 
 var isInstance bool
@@ -52,7 +58,7 @@ func (s *CustomVerilogListener) ExitModule_identifier(ctx *parser.Module_identif
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
 	// StartModule(ctx.Module_identifier().GetText())
 	DeclarePorts(s.ports)
-	CreateConstructor(ctx.Module_identifier().GetText(), s.ports)
+	CreateConstructor(ctx.Module_identifier().GetText(), s.ports, s.params)
 }
 
 // ExitInput_declaration is called when production Input_declaration is exited.
@@ -90,6 +96,16 @@ func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationC
 		s.currentPort.id = strs[i]
 		s.ports = append(s.ports, s.currentPort)
 	}
+}
+
+// ExitParam_assignment is called when production param_assignment is exited.
+func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmentContext) {
+	s.currentPort.id = ctx.Parameter_identifier().GetText()
+	s.ports = append(s.ports, s.currentPort)
+	s.params = append(s.params, Param{
+		s.currentPort.id,
+		expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName),
+	})
 }
 
 // ExitRange_ is called when production range_ is exited.
