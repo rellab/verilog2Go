@@ -8,12 +8,12 @@ type elelock struct {
 }
 
 func Elelock(args *elelock) elelock {
-	args.clk.AddPosedgeObserver(args)
-	args.reset.AddPosedgeObserver(args)
-	args.clk.AddPosedgeObserver(args)
-	args.reset.AddPosedgeObserver(args)
-	args.clk.AddPosedgeObserver(args)
-	args.reset.AddPosedgeObserver(args)
+	args.clk.AddPosedgeObserver(args.PreAlways1, args.Always1)
+	args.reset.AddPosedgeObserver(args.PreAlways1, args.Always1)
+	args.clk.AddPosedgeObserver(args.PreAlways2, args.Always2)
+	args.reset.AddPosedgeObserver(args.PreAlways2, args.Always2)
+	args.clk.AddPosedgeObserver(args.PreAlways3, args.Always3)
+	args.reset.AddPosedgeObserver(args.PreAlways3, args.Always3)
 	args.SECRET_3 = variable.CreateBitArray(4, 5)
 	args.SECRET_2 = variable.CreateBitArray(4, 9)
 	args.SECRET_1 = variable.CreateBitArray(4, 6)
@@ -26,7 +26,7 @@ func (elelock *elelock) Exec() {
 	elelock.key_enbl.Assign(elelock.ke1.Bitand(elelock.ke2.Not()))
 }
 
-func (elelock *elelock) PreAlways() []variable.BitArray {
+func (elelock *elelock) PreAlways1() []variable.BitArray {
 	var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
 	var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
 	var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
@@ -65,7 +65,7 @@ func (elelock *elelock) PreAlways() []variable.BitArray {
 	}
 	return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7, var8, var9, var10, var11, var12, var13, var14, var15, var16}
 }
-func (elelock *elelock) PreAlways() []variable.BitArray {
+func (elelock *elelock) PreAlways2() []variable.BitArray {
 	var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
 	var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
 	var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
@@ -83,7 +83,7 @@ func (elelock *elelock) PreAlways() []variable.BitArray {
 	}
 	return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7, var8}
 }
-func (elelock *elelock) PreAlways() []variable.BitArray {
+func (elelock *elelock) PreAlways3() []variable.BitArray {
 	var1 := *variable.CreateBitArray(0, elelock.clk.ToInt())
 	var2 := *variable.CreateBitArray(0, elelock.reset.ToInt())
 	var3 := *variable.CreateBitArray(0, elelock.close.ToInt())
@@ -104,7 +104,7 @@ func (elelock *elelock) PreAlways() []variable.BitArray {
 	}
 	return []variable.BitArray{var1, var2, var3, var4, var5, var6, var7}
 }
-func (elelock *elelock) Always(vars []variable.BitArray) {
+func (elelock *elelock) Always1(vars []variable.BitArray) {
 	if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[1])) {
 		elelock.key[3].Assign(vars[4])
 		elelock.key[2].Assign(vars[5])
@@ -127,7 +127,7 @@ func (elelock *elelock) Always(vars []variable.BitArray) {
 	}
 	elelock.Exec()
 }
-func (elelock *elelock) Always(vars []variable.BitArray) {
+func (elelock *elelock) Always2(vars []variable.BitArray) {
 	if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[1])) {
 		elelock.ke2.Assign(vars[4])
 		elelock.ke1.Assign(vars[5])
@@ -137,7 +137,7 @@ func (elelock *elelock) Always(vars []variable.BitArray) {
 	}
 	elelock.Exec()
 }
-func (elelock *elelock) Always(vars []variable.BitArray) {
+func (elelock *elelock) Always3(vars []variable.BitArray) {
 	if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[1])) {
 		elelock.lock.Assign(vars[4])
 	} else {

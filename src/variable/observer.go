@@ -1,21 +1,21 @@
 package variable
 
-type PosedgeObserver interface {
-	PreAlways() []BitArray
-	Always([]BitArray)
+type PosedgeObserver struct {
+	PreAlways func() []BitArray
+	Always    func(vars []BitArray)
 }
 
-type NegedgeObserver interface {
-	PreAlways() []BitArray
-	Always([]BitArray)
+type NegedgeObserver struct {
+	PreAlways func() []BitArray
+	Always    func(vars []BitArray)
 }
 
-func (ba *BitArray) AddPosedgeObserver(po PosedgeObserver) {
-	ba.pos = append(ba.pos, po)
+func (ba *BitArray) AddPosedgeObserver(preAlways func() []BitArray, always func(vars []BitArray)) {
+	ba.pos = append(ba.pos, PosedgeObserver{preAlways, always})
 }
 
-func (ba *BitArray) AddNegedgeObserver(no NegedgeObserver) {
-	ba.neg = append(ba.neg, no)
+func (ba *BitArray) AddNegedgeObserver(preAlways func() []BitArray, always func(vars []BitArray)) {
+	ba.neg = append(ba.neg, NegedgeObserver{preAlways, always})
 }
 
 func (ba BitArray) NotifyPosedgeObserver() {
