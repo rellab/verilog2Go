@@ -3,7 +3,8 @@ package generated
 import "github.com/verilog2Go/src/variable"
 
 type elelock struct {
-	clk, reset, close, tenkey, lock, ke1, ke2, key, match, key_enbl, SECRET_3, SECRET_2, SECRET_1, SECRET_0 *variable.BitArray
+	clk, reset, close, tenkey, lock, ke1, ke2, match, key_enbl, SECRET_3, SECRET_2, SECRET_1, SECRET_0 *variable.BitArray
+	key                                                                                                []*variable.BitArray
 }
 
 func Elelock(args *elelock) elelock {
@@ -21,7 +22,7 @@ func Elelock(args *elelock) elelock {
 }
 
 func (elelock *elelock) Exec() {
-	elelock.match.Assign(elelock.SECRET_3.Equal(*elelock.key.Get(3)).And(elelock.SECRET_2.Equal(*elelock.key.Get(2)).And(elelock.SECRET_1.Equal(*elelock.key.Get(1)).And(elelock.SECRET_0.Equal(*elelock.key.Get(0))))))
+	elelock.match.Assign(elelock.SECRET_3.Equal(*elelock.key[3]).And(elelock.SECRET_2.Equal(*elelock.key[2]).And(elelock.SECRET_1.Equal(*elelock.key[1]).And(elelock.SECRET_0.Equal(*elelock.key[0])))))
 	elelock.key_enbl.Assign(elelock.ke1.Bitand(elelock.ke2.Not()))
 }
 
@@ -55,9 +56,9 @@ func (elelock *elelock) PreAlways() []variable.BitArray {
 			var12.Assign(*variable.CreateBitArray(4, 15))
 		} else {
 			if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(*elelock.key_enbl)) {
-				var13.Assign(*elelock.key.Get(2))
-				var14.Assign(*elelock.key.Get(1))
-				var15.Assign(*elelock.key.Get(0))
+				var13.Assign(*elelock.key[2])
+				var14.Assign(*elelock.key[1])
+				var15.Assign(*elelock.key[0])
 				var16.Assign(elelock.keyenc(*elelock.tenkey))
 			}
 		}
