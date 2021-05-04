@@ -21,7 +21,7 @@ func TestPosedge(t *testing.T) {
 	ba.Set(3)
 	var tm TestModule
 	tm.a = ba
-	tm.a.AddPosedgeObserver(tm)
+	// tm.a.AddPosedgeObserver(tm)
 
 	var b variable.BitArray
 	b.InitBitArray(3)

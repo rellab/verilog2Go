@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 	enable.InitBitArray(1)
 	lamp.InitBitArray(7)
 	cnt.InitBitArray(3)
-	sa = Saikoro(&ck, &reset, &enable, &lamp, &cnt)
+	sa = Saikoro(&saikoro{&ck, &reset, &enable, &lamp, &cnt})
 
 	//テストケース実行
 	m.Run()

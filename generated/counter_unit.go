@@ -11,9 +11,9 @@ func Counter_unit(args *counter_unit) counter_unit {
 }
 
 func (counter_unit *counter_unit) Exec() {
-	cu0 := Cnt_unit(&cnt_unit{EN: variable.CreateBitArray(1, 1), Q: counter_unit.q.Get(0), CA: counter_unit.ca.Get(0), CK: counter_unit.ck, RES: counter_unit.res})
+	cu0 := Cnt_unit(&cnt_unit{Q: counter_unit.q.Get(0), CA: counter_unit.ca.Get(0), CK: counter_unit.ck, RES: counter_unit.res, EN: variable.CreateBitArray(1, 1)})
 	cu0.Exec()
-	cu1 := Cnt_unit(&cnt_unit{CK: counter_unit.ck, RES: counter_unit.res, EN: counter_unit.ca.Get(0), Q: counter_unit.q.Get(1), CA: counter_unit.ca.Get(1)})
+	cu1 := Cnt_unit(&cnt_unit{RES: counter_unit.res, EN: counter_unit.ca.Get(0), Q: counter_unit.q.Get(1), CA: counter_unit.ca.Get(1), CK: counter_unit.ck})
 	cu1.Exec()
 	cu2 := Cnt_unit(&cnt_unit{CK: counter_unit.ck, RES: counter_unit.res, EN: counter_unit.ca.Get(1), Q: counter_unit.q.Get(2), CA: counter_unit.ca.Get(2)})
 	cu2.Exec()
