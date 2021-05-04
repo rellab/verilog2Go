@@ -11,18 +11,20 @@ var nonBlockingStatementCount int
 var ifBlock string
 var leftBlock string
 var rightBlock string
+var alwaysCounter = 0
 
 func AddPosedgeObserver(id string) {
-	Observer += InputIndent(1) + "args." + id + ".AddPosedgeObserver(args)\n"
+	Observer += InputIndent(1) + "args." + id + ".AddPosedgeObserver(args.PreAlways" + strconv.Itoa(alwaysCounter) + ", args.Always" + strconv.Itoa(alwaysCounter) + ")\n"
 }
 
 func AddNegedgeObserver(id string) {
-	Observer += InputIndent(1) + "args." + id + ".AddNegedgeObserver(args)\n"
+	Observer += InputIndent(1) + "args." + id + ".AddNegedgeObserver(args.PreAlways" + strconv.Itoa(alwaysCounter) + ", args.Always" + strconv.Itoa(alwaysCounter) + ")\n"
 }
 
 func CreateAlways() {
-	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways() []variable.BitArray{\n"
-	Always += "func (" + ModuleName + " *" + ModuleName + ") Always(vars []variable.BitArray){\n"
+	alwaysCounter++
+	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways" + strconv.Itoa(alwaysCounter) + "() []variable.BitArray{\n"
+	Always += "func (" + ModuleName + " *" + ModuleName + ") Always" + strconv.Itoa(alwaysCounter) + "(vars []variable.BitArray){\n"
 	nonBlockingStatementCount = 0
 	declarateInput()
 }
