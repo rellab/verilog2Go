@@ -18,8 +18,9 @@ type CustomVerilogListener struct {
 
 //Port はポートのidとビット数を持つ構造体
 type Port struct {
-	id     string
-	length int
+	id          string
+	length      int
+	isDimension bool
 }
 
 type Param struct {
@@ -65,7 +66,13 @@ func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declar
 func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarationContext) {
 	strs := strings.Split(ctx.List_of_port_identifiers().GetText(), ",")
 	for i := 0; i < len(strs); i++ {
-		s.currentPort.id = strs[i]
+		if strings.Contains(strs[i], "[") {
+			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.isDimension = true
+		} else {
+			s.currentPort.id = strs[i]
+			s.currentPort.isDimension = false
+		}
 		s.ports = append(s.ports, s.currentPort)
 		DeclareInput(s.currentPort)
 	}
@@ -75,7 +82,13 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declarationContext) {
 	strs := strings.Split(ctx.List_of_port_identifiers().GetText(), ",")
 	for i := 0; i < len(strs); i++ {
-		s.currentPort.id = strs[i]
+		if strings.Contains(strs[i], "[") {
+			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.isDimension = true
+		} else {
+			s.currentPort.id = strs[i]
+			s.currentPort.isDimension = false
+		}
 		s.ports = append(s.ports, s.currentPort)
 	}
 }
@@ -84,7 +97,13 @@ func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declar
 func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationContext) {
 	strs := strings.Split(ctx.List_of_variable_identifiers().GetText(), ",")
 	for i := 0; i < len(strs); i++ {
-		s.currentPort.id = strs[i]
+		if strings.Contains(strs[i], "[") {
+			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.isDimension = true
+		} else {
+			s.currentPort.id = strs[i]
+			s.currentPort.isDimension = false
+		}
 		s.ports = append(s.ports, s.currentPort)
 	}
 }
@@ -93,7 +112,13 @@ func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationC
 func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationContext) {
 	strs := strings.Split(ctx.List_of_net_identifiers().GetText(), ",")
 	for i := 0; i < len(strs); i++ {
-		s.currentPort.id = strs[i]
+		if strings.Contains(strs[i], "[") {
+			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.isDimension = true
+		} else {
+			s.currentPort.id = strs[i]
+			s.currentPort.isDimension = false
+		}
 		s.ports = append(s.ports, s.currentPort)
 	}
 }
@@ -103,8 +128,8 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 	s.currentPort.id = ctx.Parameter_identifier().GetText()
 	s.ports = append(s.ports, s.currentPort)
 	s.params = append(s.params, Param{
-		s.currentPort.id,
-		expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName),
+		id:         s.currentPort.id,
+		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName),
 	})
 }
 

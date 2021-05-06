@@ -45,10 +45,20 @@ func DeclarePorts(ports []Port) {
 		return
 	}
 	Ports = "type " + ModuleName + " struct{\n" + InputIndent(1)
-	for i := 0; i < len(ports)-1; i++ {
-		Ports += ports[i].id + ", "
+	dimensions := ""
+	for i := 0; i < len(ports); i++ {
+		if !ports[i].isDimension {
+			Ports += ports[i].id + ", "
+		} else {
+			dimensions += ports[i].id + ", "
+		}
 	}
-	Ports += ports[len(ports)-1].id + " *variable.BitArray\n"
+	Ports = Ports[:len(Ports)-2]
+	Ports += " *variable.BitArray\n"
+	if dimensions != "" {
+		dimensions = dimensions[:len(dimensions)-2]
+		Ports += InputIndent(1) + dimensions + " []*variable.BitArray\n"
+	}
 	Ports += "}\n"
 }
 
