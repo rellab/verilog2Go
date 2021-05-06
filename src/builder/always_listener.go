@@ -2,6 +2,7 @@ package builder
 
 import (
 	"strings"
+
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/expression"
 )
@@ -54,7 +55,7 @@ func (s *CustomVerilogListener) ExitExpression(ctx *parser.ExpressionContext) {
 	//if文の条件式
 	if IfDepth > 0 && !hasExpression {
 		hasExpression = true
-		IfStatement(expression.CompileExpression(ctx.GetText(), ModuleName))
+		IfStatement(expression.CompileExpression(ctx.GetText(), ModuleName, s.dimensions))
 	}
 }
 
@@ -84,5 +85,5 @@ func (s *CustomVerilogListener) ExitStatement_or_null(ctx *parser.Statement_or_n
 // ExitNonblocking_assignment is called when production nonblocking_assignment is exited.
 func (s *CustomVerilogListener) ExitNonblocking_assignment(ctx *parser.Nonblocking_assignmentContext) {
 	//ノンブロッキング代入文
-	DeclarateVariable(ctx.GetText())
+	DeclarateVariable(ctx.GetText(), s.dimensions)
 }

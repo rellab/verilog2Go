@@ -56,6 +56,12 @@ func ToInt(str string) (result string) {
 	//ポート名[ビット]
 	result = str
 	if len(ports) > 1 {
+		for _, v := range Dimensions {
+			if v == ports[0] {
+				result = str
+				return
+			}
+		}
 		result = ports[0] + ".Get(" + strings.TrimRight(ports[1], "]") + ")"
 	} else if len(values) > 1 {
 		var value int64

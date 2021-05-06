@@ -12,6 +12,7 @@ import (
 type CustomVerilogListener struct {
 	*parser.BaseVerilogListener
 	ports       []Port
+	dimensions  []string
 	params      []Param
 	currentPort Port
 }
@@ -69,6 +70,7 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
 			s.currentPort.isDimension = true
+			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
 			s.currentPort.isDimension = false
@@ -85,6 +87,7 @@ func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declar
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
 			s.currentPort.isDimension = true
+			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
 			s.currentPort.isDimension = false
@@ -100,6 +103,7 @@ func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationC
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
 			s.currentPort.isDimension = true
+			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
 			s.currentPort.isDimension = false
@@ -115,6 +119,7 @@ func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationC
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
 			s.currentPort.isDimension = true
+			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
 			s.currentPort.isDimension = false
@@ -129,7 +134,7 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 	s.ports = append(s.ports, s.currentPort)
 	s.params = append(s.params, Param{
 		id:         s.currentPort.id,
-		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName),
+		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName, s.dimensions),
 	})
 }
 
@@ -141,5 +146,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), ModuleName))
+	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), ModuleName, s.dimensions))
 }

@@ -89,7 +89,7 @@ func declarateInput() {
 	}
 }
 
-func DeclarateVariable(exp string) {
+func DeclarateVariable(exp string, dimensions []string) {
 	nonBlockingStatementCount++
 	//一次格納する変数
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
@@ -97,7 +97,7 @@ func DeclarateVariable(exp string) {
 	slice := strings.Split(exp, "<=")
 
 	PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
-	right := expression.CompileExpression(slice[1], ModuleName)
+	right := expression.CompileExpression(slice[1], ModuleName, dimensions)
 	if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 30) || !(strings.Contains(right, "(")) {
 		right = "*" + right
 	}

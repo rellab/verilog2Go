@@ -7,9 +7,11 @@ import (
 )
 
 var ModuleName string
+var Dimensions []string
 
-func CompileExpression(str string, moduleName string) string {
+func CompileExpression(str string, moduleName string, dimensions []string) string {
 	ModuleName = moduleName
+	Dimensions = dimensions
 	input := antlr.NewInputStream(str)
 
 	lexer := parser.NewExpressionLexer(input)
