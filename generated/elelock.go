@@ -44,16 +44,16 @@ func (elelock *elelock) PreAlways1() []variable.BitArray{
     var15 := *variable.CreateBitArray(8, 0)
     var16 := *variable.CreateBitArray(8, 0)
     if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(var2)) {
-        var5.Assign(variable.CreateBitArray(4, 15))
-        var6.Assign(variable.CreateBitArray(4, 15))
-        var7.Assign(variable.CreateBitArray(4, 15))
-        var8.Assign(variable.CreateBitArray(4, 15))
+        var5.Assign(*variable.CreateBitArray(4, 15))
+        var6.Assign(*variable.CreateBitArray(4, 15))
+        var7.Assign(*variable.CreateBitArray(4, 15))
+        var8.Assign(*variable.CreateBitArray(4, 15))
     } else{
         if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(var3)) {
-            var9.Assign(variable.CreateBitArray(4, 15))
-            var10.Assign(variable.CreateBitArray(4, 15))
-            var11.Assign(variable.CreateBitArray(4, 15))
-            var12.Assign(variable.CreateBitArray(4, 15))
+            var9.Assign(*variable.CreateBitArray(4, 15))
+            var10.Assign(*variable.CreateBitArray(4, 15))
+            var11.Assign(*variable.CreateBitArray(4, 15))
+            var12.Assign(*variable.CreateBitArray(4, 15))
         } else{
             if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(*elelock.key_enbl)) {
                 var13.Assign(*elelock.key[2])
