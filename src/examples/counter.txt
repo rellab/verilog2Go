@@ -1,0 +1,62 @@
+DESIGN TIME PRECISION: 10e0
+PACKAGES:
+SCOPES:
+counter_test module <counter_test> instance 1 children, 0 classes
+    timescale = 10e0 / 10e0
+    enum sets {
+    }
+    enum names {
+    }
+    reg: CLK unpacked dims=0 pin_count=1 netvector_t:logic unsigned (eref=2, lref=2) scope=counter_test #(0,0,0) vector_width=1 pin_count=1
+        [0]: 0x205f6f77bd0 counter_test.CLK
+    wire: Q unpacked dims=0 pin_count=1 netvector_t:logic unsigned[3:0] (eref=1, lref=0) scope=counter_test #(0,0,0) vector_width=4 pin_count=1
+        [0]: 0x205f6f77c60 counter_test.Q
+    reg: RES unpacked dims=0 pin_count=1 netvector_t:logic unsigned (eref=1, lref=2) scope=counter_test #(0,0,0) vector_width=1 pin_count=1
+        [0]: 0x205f6f778a0 counter_test.RES
+counter_test.counter module <counter> instance 0 children, 0 classes
+    timescale = 10e0 / 10e0
+    enum sets {
+    }
+    enum names {
+    }
+    event _ivl_0; nprobe=2 scope=counter_test.counter // counter.v:9
+    wire: CLK unpacked dims=0 pin_count=1 input netvector_t:logic unsigned (eref=0, lref=0) scope=counter_test.counter #(0,0,0) vector_width=1 pin_count=1
+        [0]: 0x205f6f77bd0 counter_test.CLK
+    reg: Q unpacked dims=0 pin_count=1 output netvector_t:logic unsigned[3:0] (eref=2, lref=3) scope=counter_test.counter #(0,0,0) vector_width=4 pin_count=1
+        [0]: 0x205f6f77c60 counter_test.Q
+    wire: RES unpacked dims=0 pin_count=1 input netvector_t:logic unsigned (eref=1, lref=0) scope=counter_test.counter #(0,0,0) vector_width=1 pin_count=1
+        [0]: 0x205f6f778a0 counter_test.RES
+ELABORATED NODES:
+posedge -> _ivl_0; 
+    0 pin0 I (strong0 strong1): 0x205f6f77bd0 counter_test.CLK
+negedge -> _ivl_0; 
+    0 pin0 I (strong0 strong1): 0x205f6f778a0 counter_test.RES
+ELABORATED BRANCHES:
+ELABORATED PROCESSES:
+initial  /* counter_test.v:15 in counter_test */
+  begin
+      $monitor("CLK=%d, RES=%d, Q=%d", CLK, RES, Q[3:0]);
+      $dumpfile("counter.vcd");
+      $dumpvars(32'sd0, <scope=counter_test>);
+  end
+initial  /* counter_test.v:10 in counter_test */
+  begin
+      {CLK} = 1'sd0;
+      {RES} = 1'sd0;
+      #23
+        {RES} = 1'sd-1;
+      #150
+        $finish;
+  end
+always  /* counter_test.v:8 in counter_test */
+  #5
+    {CLK} = ~(CLK);
+always  /* counter.v:9 in counter_test.counter */
+  @(_ivl_0)  // counter.v:9
+    if ((RES)==(1'd0))
+        {Q} = 4'd0;
+    else
+        if ((Q[3:0])==(4'd9))
+            {Q} = 4'd0;
+        else
+            {Q} = (Q[3:0])+(4'd1);
