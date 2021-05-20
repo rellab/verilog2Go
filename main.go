@@ -1,6 +1,8 @@
 package main
 
 import (
+	//#include <stdio.h>
+	"C"
 	"io/ioutil"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
@@ -8,12 +10,14 @@ import (
 	"github.com/verilog2Go/src/builder"
 )
 
-func main() {
+//export createGo
+func createGo(src *C.char) {
 	//ファイル読み取り
-	bytes, err := ioutil.ReadFile("./src/examples/elelock.v")
+	bytes, err := ioutil.ReadFile(C.GoString(src))
 	if err != nil {
 		panic(err)
 	}
+	// fmt.Printf("%s\n", src)
 	input := antlr.NewInputStream(string(bytes))
 	//lexerの作成
 	lexer := parser.NewVerilogLexer(input)
@@ -31,4 +35,8 @@ func main() {
 
 	builder.CreateNewFile()
 	builder.Write()
+}
+
+func main() {
+	createGo(C.CString("./src/examples/elelock.v"))
 }
