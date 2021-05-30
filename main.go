@@ -3,7 +3,6 @@ package main
 import (
 	//#include <stdio.h>
 	"C"
-	"io/ioutil"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	parser "github.com/verilog2Go/antlr/verilog"
@@ -13,12 +12,13 @@ import (
 //export createGo
 func createGo(src *C.char) {
 	//ファイル読み取り
-	bytes, err := ioutil.ReadFile(C.GoString(src))
-	if err != nil {
-		panic(err)
-	}
+	// bytes, err := ioutil.ReadFile(C.GoString(src))
+	// if err != nil {
+	// 	panic(err)
+	// }
 	// fmt.Printf("%s\n", src)
-	input := antlr.NewInputStream(string(bytes))
+	// input := antlr.NewInputStream(string(bytes))
+	input := antlr.NewInputStream(C.GoString(src))
 	//lexerの作成
 	lexer := parser.NewVerilogLexer(input)
 	stream := antlr.NewCommonTokenStream(lexer, 0)

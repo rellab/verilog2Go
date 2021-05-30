@@ -73,8 +73,6 @@ extern "C" {
 #endif
 
 extern void createGo(char* src);
-extern GoSlice rune2int(GoSlice r);
-extern GoSlice int2rune(GoSlice n);
 
 #ifdef __cplusplus
 }
