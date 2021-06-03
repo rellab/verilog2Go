@@ -11,13 +11,7 @@ import (
 
 //export createGo
 func createGo(src *C.char) {
-	//ファイル読み取り
-	// bytes, err := ioutil.ReadFile(C.GoString(src))
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Printf("%s\n", src)
-	// input := antlr.NewInputStream(string(bytes))
+	//verilogソースの読み取り
 	input := antlr.NewInputStream(C.GoString(src))
 	//lexerの作成
 	lexer := parser.NewVerilogLexer(input)
@@ -33,10 +27,9 @@ func createGo(src *C.char) {
 	tree.ToStringTree([]string{}, p)
 	// fmt.Println(tree.ToStringTree([]string{}, p))
 
-	builder.CreateNewFile()
 	builder.Write()
 }
 
 func main() {
-	createGo(C.CString("./src/examples/elelock.v"))
+	createGo(C.CString("module adder(a, b, q);input [3:0] a, b;output [3:0] q;assign q = a + b;endmodule"))
 }
