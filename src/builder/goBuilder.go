@@ -18,6 +18,7 @@ var Source string
 // StartModule はモジュールの初期化を行う
 func StartModule(moduleName string) {
 	ModuleName = moduleName
+	Exec = ""
 }
 
 // EndModule はモジュール内の要素を一つにまとめる
