@@ -21,6 +21,12 @@ func (ba *BitArray) InitBitArray(length int) {
 	}
 }
 
+func NewBitArray(length int) *BitArray {
+	var ba BitArray
+	ba.InitBitArray(length)
+	return &ba
+}
+
 //Set はBitArrayのBitsに値をセットする
 func (ba *BitArray) Set(value int) {
 	preValue := ba.ToInt()

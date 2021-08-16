@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -61,6 +62,7 @@ func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declar
 	// StartModule(ctx.Module_identifier().GetText())
 	DeclarePorts(s.ports)
 	CreateConstructor(ctx.Module_identifier().GetText(), s.ports, s.params)
+	CreateRunMethod(s.ports)
 }
 
 // ExitInput_declaration is called when production Input_declaration is exited.
@@ -69,6 +71,8 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 	for i := 0; i < len(strs); i++ {
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.length, _ = strconv.Atoi(strs[i][strings.Index(strs[i], "[") : strings.Index(strs[i], "[")+1])
+			fmt.Println(s.currentPort.length)
 			s.currentPort.isDimension = true
 			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {

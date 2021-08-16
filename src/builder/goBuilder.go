@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -8,6 +9,7 @@ var ModuleName string
 var Ports string
 var Inputs []Port
 var Constructor string
+var SubConstructor string
 var Observer string
 var Exec string
 var PreAlways string
@@ -17,7 +19,8 @@ var Source string
 
 // StartModule はモジュールの初期化を行う
 func StartModule(moduleName string) {
-	ModuleName = moduleName
+	ModuleName = strings.Title(moduleName)
+	// ModuleName = moduleName
 	Exec = ""
 }
 
@@ -29,8 +32,10 @@ func EndModule() {
 	Source += Ports + "\n"
 	//コンストラクタ
 	Source += Constructor
+	// 並列処理のコンストラクタ
+	Source += SubConstructor
 	//Exec
-	Exec = "func (" + ModuleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
+	Exec = "func (" + strings.ToLower(ModuleName) + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
 	Source += Exec
 	//PreAlways
 	Source += PreAlways
@@ -74,7 +79,7 @@ func CreateConstructor(funcName string, ports []Port, params []Param) {
 		return
 	}
 	//コンストラクタの１行目
-	ConstructorArgument := "func " + strings.Title(funcName) + "(args *" + ModuleName + ") " + ModuleName + "{\n"
+	ConstructorArgument := "func New" + strings.Title(funcName) + "(args *" + ModuleName + ") " + ModuleName + "{\n"
 
 	Constructor = ConstructorArgument + Observer
 
@@ -85,6 +90,17 @@ func CreateConstructor(funcName string, ports []Port, params []Param) {
 	}
 
 	Constructor += InputIndent(1) + "return *args\n}\n\n"
+
+	SubConstructor = "func NewGoroutine" + strings.Title(funcName) + " (in []chan variable.BitArray, out []chan variable.BitArray) *" + ModuleName + "{\n"
+	SubConstructor += InputIndent(1) + ModuleName + " := &" + strings.Title(ModuleName) + "{"
+	if len(ports) > 0 {
+		for _, v := range ports {
+			SubConstructor += "variable.NewBitArray(" + strconv.Itoa(v.length) + "), "
+		}
+		SubConstructor = SubConstructor[:len(SubConstructor)-2] + "}\n"
+	}
+	SubConstructor += InputIndent(1) + ModuleName + ".run(in, out)\n"
+	SubConstructor += InputIndent(1) + "return " + ModuleName + "\n}\n\n"
 }
 
 // CreateExec はExecを生成する
