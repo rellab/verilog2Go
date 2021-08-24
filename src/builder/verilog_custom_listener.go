@@ -1,7 +1,6 @@
 package builder
 
 import (
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -22,6 +21,7 @@ type CustomVerilogListener struct {
 type Port struct {
 	id          string
 	length      int
+	portType    string
 	isDimension bool
 }
 
@@ -71,13 +71,21 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 	for i := 0; i < len(strs); i++ {
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
-			s.currentPort.length, _ = strconv.Atoi(strs[i][strings.Index(strs[i], "[") : strings.Index(strs[i], "[")+1])
-			fmt.Println(s.currentPort.length)
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = true
+			s.currentPort.portType = "input"
 			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
+			if strings.Contains(ctx.GetText(), "[") {
+				s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+				s.currentPort.length++
+			} else {
+				s.currentPort.length = 1
+			}
 			s.currentPort.isDimension = false
+			s.currentPort.portType = "input"
 		}
 		s.ports = append(s.ports, s.currentPort)
 		DeclareInput(s.currentPort)
@@ -90,11 +98,21 @@ func (s *CustomVerilogListener) ExitOutput_declaration(ctx *parser.Output_declar
 	for i := 0; i < len(strs); i++ {
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = true
+			s.currentPort.portType = "output"
 			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
+			if strings.Contains(ctx.GetText(), "[") {
+				s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+				s.currentPort.length++
+			} else {
+				s.currentPort.length = 1
+			}
 			s.currentPort.isDimension = false
+			s.currentPort.portType = "output"
 		}
 		s.ports = append(s.ports, s.currentPort)
 	}
@@ -106,11 +124,17 @@ func (s *CustomVerilogListener) ExitReg_declaration(ctx *parser.Reg_declarationC
 	for i := 0; i < len(strs); i++ {
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = true
+			s.currentPort.portType = "reg"
 			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = false
+			s.currentPort.portType = "reg"
 		}
 		s.ports = append(s.ports, s.currentPort)
 	}
@@ -122,11 +146,17 @@ func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationC
 	for i := 0; i < len(strs); i++ {
 		if strings.Contains(strs[i], "[") {
 			s.currentPort.id = strs[i][:strings.Index(strs[i], "[")]
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = true
+			s.currentPort.portType = "net"
 			s.dimensions = append(s.dimensions, strs[i][:strings.Index(strs[i], "[")])
 		} else {
 			s.currentPort.id = strs[i]
+			s.currentPort.length, _ = strconv.Atoi(ctx.Range_().GetText()[strings.Index(ctx.Range_().GetText(), "[")+1 : strings.Index(ctx.Range_().GetText(), "[")+2])
+			s.currentPort.length++
 			s.currentPort.isDimension = false
+			s.currentPort.portType = "net"
 		}
 		s.ports = append(s.ports, s.currentPort)
 	}
@@ -150,5 +180,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), ModuleName, s.dimensions))
+	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), moduleName, s.dimensions))
 }

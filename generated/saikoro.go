@@ -2,24 +2,68 @@ package generated
 
 import "github.com/verilog2Go/src/variable"
 
-type saikoro struct{
+type Saikoro struct{
     ck, reset, enable, lamp, cnt *variable.BitArray
 }
 
-func Saikoro(args *saikoro) saikoro{
-    args.ck.AddPosedgeObserver(args.PreAlways1, args.Always1)
-    args.reset.AddPosedgeObserver(args.PreAlways1, args.Always1)
+func NewSaikoro(args *Saikoro) Saikoro{
+    args.ck.AddPosedgeObserver(args.PreAlways1, args.Always1, args.Exec)
+    args.reset.AddPosedgeObserver(args.PreAlways1, args.Always1, args.Exec)
     return *args
 }
 
-func (saikoro *saikoro) Exec() {
+func NewGoroutineSaikoro (in []chan int, out []chan int) *Saikoro{
+    Saikoro := &Saikoro{variable.NewBitArray(1), variable.NewBitArray(1), variable.NewBitArray(1), variable.NewBitArray(7), variable.NewBitArray(3)}
+    go Saikoro.run(in, out)
+    return Saikoro
+}
+
+func (saikoro *Saikoro) Exec() {
     saikoro.lamp.Assign(saikoro.dec(*saikoro.cnt))
 }
 
-func (saikoro *saikoro) PreAlways1() []variable.BitArray{
-    var1 := *variable.CreateBitArray(0, saikoro.ck.ToInt())
-    var2 := *variable.CreateBitArray(0, saikoro.reset.ToInt())
-    var3 := *variable.CreateBitArray(0, saikoro.enable.ToInt())
+func (saikoro *Saikoro) run(in []chan int, out []chan int) {
+    defer close(out[0])
+    for {
+        select {
+        case v, ok := <-in[0]:
+            if ok {
+                saikoro.ck.Set(v)
+                bitArrays1 := saikoro.PreAlways1()
+                saikoro.Always1(bitArrays1)
+                saikoro.Exec()
+                out[0] <- saikoro.lamp.ToInt()
+            } else {
+                return 
+            }
+        case v, ok := <-in[1]:
+            if ok {
+                saikoro.reset.Set(v)
+                bitArrays1 := saikoro.PreAlways1()
+                saikoro.Always1(bitArrays1)
+                saikoro.Exec()
+                out[0] <- saikoro.lamp.ToInt()
+            } else {
+                return 
+            }
+        case v, ok := <-in[2]:
+            if ok {
+                saikoro.enable.Set(v)
+                bitArrays1 := saikoro.PreAlways1()
+                saikoro.Always1(bitArrays1)
+                saikoro.Exec()
+                out[0] <- saikoro.lamp.ToInt()
+            } else {
+                return 
+            }
+        }
+    }
+}
+
+func (Saikoro *Saikoro) PreAlways1() []variable.BitArray{
+    var1 := *variable.CreateBitArray(1, Saikoro.ck.ToInt())
+    var2 := *variable.CreateBitArray(1, Saikoro.reset.ToInt())
+    var3 := *variable.CreateBitArray(1, Saikoro.enable.ToInt())
     var4 := *variable.CreateBitArray(8, 0)
     var5 := *variable.CreateBitArray(8, 0)
     var6 := *variable.CreateBitArray(8, 0)
@@ -27,31 +71,30 @@ func (saikoro *saikoro) PreAlways1() []variable.BitArray{
         var4.Assign(*variable.CreateBitArray(3, 1))
     } else{
         if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(var3)) {
-            if variable.CheckBit(variable.CreateBitArray(3, 6).Equal(*saikoro.cnt)) {
+            if variable.CheckBit(variable.CreateBitArray(3, 6).Equal(*Saikoro.cnt)) {
                 var5.Assign(*variable.CreateBitArray(3, 1))
             } else{
-                var6.Assign(variable.CreateBitArray(3, 1).Add(*saikoro.cnt))
+                var6.Assign(variable.CreateBitArray(3, 1).Add(*Saikoro.cnt))
             }
         }
     }
     return []variable.BitArray{var1, var2, var3, var4, var5, var6}
 }
-func (saikoro *saikoro) Always1(vars []variable.BitArray){
+func (Saikoro *Saikoro) Always1(vars []variable.BitArray){
     if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[1])) {
-        saikoro.cnt.Assign(vars[3])
+        Saikoro.cnt.Assign(vars[3])
     } else{
         if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[2])) {
-            if variable.CheckBit(variable.CreateBitArray(3, 6).Equal(*saikoro.cnt)) {
-                saikoro.cnt.Assign(vars[4])
+            if variable.CheckBit(variable.CreateBitArray(3, 6).Equal(*Saikoro.cnt)) {
+                Saikoro.cnt.Assign(vars[4])
             } else{
-                saikoro.cnt.Assign(vars[5])
+                Saikoro.cnt.Assign(vars[5])
             }
         }
     }
-    saikoro.Exec()
 }
 
-func (saikoro *saikoro) dec(din variable.BitArray) variable.BitArray {
+func (Saikoro *Saikoro) dec(din variable.BitArray) variable.BitArray {
     dec := *variable.CreateBitArray(6, 0)
     switch din.ToInt(){
     case 1:

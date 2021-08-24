@@ -7,23 +7,14 @@ import (
 	"github.com/verilog2Go/src/variable"
 )
 
-var ck, reset, enable, lamp, cnt variable.BitArray
-var sa saikoro
-
-func TestMain(m *testing.M) {
-	//テストに必要な変数の初期化
+func TestSaikoro(t *testing.T) {
+	var ck, reset, enable, lamp, cnt variable.BitArray
 	ck.InitBitArray(1)
 	reset.InitBitArray(1)
 	enable.InitBitArray(1)
 	lamp.InitBitArray(7)
 	cnt.InitBitArray(3)
-	sa = Saikoro(&saikoro{&ck, &reset, &enable, &lamp, &cnt})
-
-	//テストケース実行
-	m.Run()
-}
-
-func TestSaikoro(t *testing.T) {
+	NewSaikoro(&Saikoro{&ck, &reset, &enable, &lamp, &cnt})
 	// sa.Exec()
 	reset.Set(0)
 	enable.Set(1)

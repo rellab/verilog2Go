@@ -6,20 +6,23 @@ import (
 )
 
 var ModuleName string
+var moduleName string
 var Ports string
 var Inputs []Port
 var Constructor string
 var SubConstructor string
 var Observer string
 var Exec string
+var RunMethod string
 var PreAlways string
 var Always string
 var Function string
 var Source string
 
 // StartModule はモジュールの初期化を行う
-func StartModule(moduleName string) {
-	ModuleName = strings.Title(moduleName)
+func StartModule(modName string) {
+	ModuleName = strings.Title(modName)
+	moduleName = modName
 	// ModuleName = moduleName
 	Exec = ""
 }
@@ -35,8 +38,10 @@ func EndModule() {
 	// 並列処理のコンストラクタ
 	Source += SubConstructor
 	//Exec
-	Exec = "func (" + strings.ToLower(ModuleName) + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
+	Exec = "func (" + moduleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
 	Source += Exec
+	//RunMethod
+	Source += RunMethod
 	//PreAlways
 	Source += PreAlways
 	//Always
@@ -91,7 +96,7 @@ func CreateConstructor(funcName string, ports []Port, params []Param) {
 
 	Constructor += InputIndent(1) + "return *args\n}\n\n"
 
-	SubConstructor = "func NewGoroutine" + strings.Title(funcName) + " (in []chan variable.BitArray, out []chan variable.BitArray) *" + ModuleName + "{\n"
+	SubConstructor = "func NewGoroutine" + strings.Title(funcName) + " (in []chan int, out []chan int) *" + ModuleName + "{\n"
 	SubConstructor += InputIndent(1) + ModuleName + " := &" + strings.Title(ModuleName) + "{"
 	if len(ports) > 0 {
 		for _, v := range ports {
@@ -99,13 +104,52 @@ func CreateConstructor(funcName string, ports []Port, params []Param) {
 		}
 		SubConstructor = SubConstructor[:len(SubConstructor)-2] + "}\n"
 	}
-	SubConstructor += InputIndent(1) + ModuleName + ".run(in, out)\n"
+	SubConstructor += InputIndent(1) + "go " + ModuleName + ".run(in, out)\n"
 	SubConstructor += InputIndent(1) + "return " + ModuleName + "\n}\n\n"
+}
+
+func CreateRunMethod(ports []Port) {
+	var inCounter, outCounter int
+	RunMethod = "func (" + moduleName + " *" + ModuleName + ") run(in []chan int, out []chan int) {\n"
+	for _, v := range ports {
+		if v.portType == "output" {
+			RunMethod += InputIndent(1) + "defer close(out[" + strconv.Itoa(outCounter) + "])\n"
+			outCounter++
+		}
+	}
+	RunMethod += InputIndent(1) + "for {\n" + InputIndent(2) + "select {\n"
+	for _, v := range ports {
+		if v.portType == "input" {
+			RunMethod += InputIndent(2) + "case v, ok := <-in[" + strconv.Itoa(inCounter) + "]:\n"
+			RunMethod += InputIndent(3) + "if ok {\n"
+			RunMethod += InputIndent(4) + moduleName + "." + v.id + ".Set(v)\n"
+			// if AlwaysCounter != 0 {
+			for i := 0; i < AlwaysCounter; i++ {
+				RunMethod += InputIndent(4) + "bitArrays" + strconv.Itoa(AlwaysCounter) + " := " + moduleName + ".PreAlways" + strconv.Itoa(AlwaysCounter) + "()\n"
+			}
+			for i := 0; i < AlwaysCounter; i++ {
+				RunMethod += InputIndent(4) + moduleName + ".Always" + strconv.Itoa(AlwaysCounter) + "(bitArrays" + strconv.Itoa(AlwaysCounter) + ")\n"
+			}
+			// }
+			RunMethod += InputIndent(4) + moduleName + ".Exec()\n"
+			var count int
+			for _, v := range ports {
+				if v.portType == "output" {
+					RunMethod += InputIndent(4) + "out[" + strconv.Itoa(count) + "] <- " + moduleName + "." + v.id + ".ToInt()\n"
+					count++
+				}
+			}
+			RunMethod += InputIndent(3) + "} else {\n" + InputIndent(4) + "return \n" + InputIndent(3) + "}\n"
+			inCounter++
+		}
+	}
+	RunMethod += InputIndent(2) + "}\n" + InputIndent(1) + "}\n"
+	RunMethod += "}\n\n"
 }
 
 // CreateExec はExecを生成する
 func CreateExec(id string, expression string) {
-	Exec += InputIndent(1) + ModuleName + "." + id + ".Assign(" + expression + ")\n"
+	Exec += InputIndent(1) + moduleName + "." + id + ".Assign(" + expression + ")\n"
 }
 
 // CreateInstance はインスタンス化を生成する

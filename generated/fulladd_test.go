@@ -58,7 +58,7 @@ func TestFulladdInstance(t *testing.T) {
 	cin.InitBitArray(1)
 	q.InitBitArray(1)
 	cout.InitBitArray(1)
-	fa := Fulladd(&fulladd{A: a, B: b, CIN: cin, Q: q, COUT: cout})
+	fa := NewFulladd(&Fulladd{A: &a, B: &b, CIN: &cin, Q: &q, COUT: &cout})
 	a.Set(0)
 	b.Set(0)
 	cin.Set(0)
