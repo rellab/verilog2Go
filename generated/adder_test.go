@@ -33,18 +33,6 @@ func TestAdder(t *testing.T) {
 		fmt.Println(q.ToInt())
 		time_counter++
 	}
-	// a.Set(2)
-	// b.Set(3)
-	// adder.Exec()
-	// assert.Equal(t, 5, q.ToInt())
-	// a.Set(3)
-	// b.Set(4)
-	// adder.Exec()
-	// assert.Equal(t, 7, q.ToInt())
-	// a.Set(5)
-	// b.Set(5)
-	// adder.Exec()
-	// assert.Equal(t, 2, q.ToInt())
 }
 
 func TestAdderGoroutine(t *testing.T) {
@@ -73,11 +61,6 @@ func TestAdderGoroutine(t *testing.T) {
 			}
 			time_counter++
 		}
-		// a <- 1
-		// b <- 2
-		// b <- 4
-		// a <- 7
-		// b <- 11
 	}()
 
 	for {
