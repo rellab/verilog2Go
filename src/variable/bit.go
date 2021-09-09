@@ -172,7 +172,7 @@ func (ba *BitArray) Reductionor() BitArray {
 	var result BitArray
 	result.InitBitArray(1)
 	for i := 0; i < length; i++ {
-		if result.bits[i].value {
+		if ba.bits[i].value {
 			result.Set(1)
 		}
 	}

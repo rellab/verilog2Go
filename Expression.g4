@@ -25,7 +25,8 @@ expression returns [int number]
     ;
 
 Number
-   :Binary_number
+   : Decimal_number
+   | Binary_number
    | Octal_number
    | Hex_number
    ;
@@ -35,6 +36,9 @@ ID
    | Binary_number
    | Octal_number
    | Hex_number
+   ;
+Decimal_number
+   : (Size)? Decimal_base Unsigned_number
    ;
 Binary_number
    : (Size)? Binary_base Binary_value

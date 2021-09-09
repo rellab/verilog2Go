@@ -8,8 +8,13 @@ counter counter(CLK, RES, Q);
 always #5  CLK = ~CLK;
 
 initial begin
-       CLK = 0;
-       RES = 0; #23      RES = 1; #150     $finish;
+       CLK = 0;RES = 0; 
+       #10      CLK = 1; 
+       #10      CLK = 0;
+       #10      CLK = 1; 
+       #10      CLK = 0; 
+       #10      CLK = 1; 
+       #150     $finish;
 end
 
 initial begin

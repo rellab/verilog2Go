@@ -124,11 +124,11 @@ func CreateRunMethod(ports []Port) {
 			RunMethod += InputIndent(3) + "if ok {\n"
 			RunMethod += InputIndent(4) + moduleName + "." + v.id + ".Set(v)\n"
 			// if AlwaysCounter != 0 {
-			for i := 0; i < AlwaysCounter; i++ {
-				RunMethod += InputIndent(4) + "bitArrays" + strconv.Itoa(AlwaysCounter) + " := " + moduleName + ".PreAlways" + strconv.Itoa(AlwaysCounter) + "()\n"
+			for i := 1; i <= AlwaysCounter; i++ {
+				RunMethod += InputIndent(4) + "bitArrays" + strconv.Itoa(i) + " := " + moduleName + ".PreAlways" + strconv.Itoa(i) + "()\n"
 			}
-			for i := 0; i < AlwaysCounter; i++ {
-				RunMethod += InputIndent(4) + moduleName + ".Always" + strconv.Itoa(AlwaysCounter) + "(bitArrays" + strconv.Itoa(AlwaysCounter) + ")\n"
+			for i := 1; i <= AlwaysCounter; i++ {
+				RunMethod += InputIndent(4) + moduleName + ".Always" + strconv.Itoa(i) + "(bitArrays" + strconv.Itoa(i) + ")\n"
 			}
 			// }
 			RunMethod += InputIndent(4) + moduleName + ".Exec()\n"
