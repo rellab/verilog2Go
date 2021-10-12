@@ -43,7 +43,7 @@ use_clause
 // 1.3 Module and primitive source text
 // START SYMBOL
 source_text
-   : timing_spec? description* EOF
+   : timing_spec? define* description* EOF
    ;
 
 description
@@ -1695,6 +1695,10 @@ timing_spec
    : '`timescale' Time_Identifier '/' Time_Identifier
    ;
 
+define
+   : '`define' define_identifier constant_expression
+   ;
+
 attribute_instance
    : '(' '*' attr_spec (',' attr_spec)* '*' ')'
    ;
@@ -1734,6 +1738,10 @@ cell_identifier
    ;
 
 config_identifier
+   : identifier
+   ;
+
+define_identifier
    : identifier
    ;
 

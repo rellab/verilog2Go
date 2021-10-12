@@ -7,9 +7,11 @@ type Bit struct {
 
 // BitArray はビットの配列を構造体で定義
 type BitArray struct {
-	bits []Bit
-	pos  []PosedgeObserver
-	neg  []NegedgeObserver
+	id     string
+	testID string
+	bits   []Bit
+	pos    []PosedgeObserver
+	neg    []NegedgeObserver
 }
 
 //InitBitArray はBitArrayを初期化する
@@ -36,6 +38,30 @@ func (ba *BitArray) Set(value int) {
 		ba.bits[length-i].value = (((value << i) & comparison) >> length) == 1
 	}
 	notify(*ba, preValue)
+}
+
+func (ba *BitArray) SetId(id string) {
+	ba.id = id
+}
+
+func (ba *BitArray) GetId() string {
+	return ba.id
+}
+
+func (ba *BitArray) SetTestId(id string) {
+	ba.testID = id
+}
+
+func (ba *BitArray) GetTestId() string {
+	return ba.testID
+}
+
+func (ba *BitArray) GetBit(index int) Bit {
+	return ba.bits[index]
+}
+
+func (ba *BitArray) GetBits() []Bit {
+	return ba.bits
 }
 
 // CreateBitArray はvalueの値を持つBirArrayを返す
@@ -84,6 +110,9 @@ func notify(a BitArray, preValue int) {
 		a.NotifyPosedgeObserver()
 	} else if a.ToInt() < preValue && a.neg != nil {
 		a.NotifyNegedgeObserver()
+	}
+	if a.ToInt() != preValue {
+		writeSignal(a)
 	}
 }
 

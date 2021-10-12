@@ -9,14 +9,19 @@ import (
 
 func TestAdder(t *testing.T) {
 	var a, b, q variable.BitArray
-	a.InitBitArray(3)
-	b.InitBitArray(3)
-	q.InitBitArray(3)
+	a.InitBitArray(4)
+	b.InitBitArray(4)
+	q.InitBitArray(4)
+	a.SetId("a")
+	b.SetId("b")
+	q.SetId("q")
 	adder := NewAdder(&Adder{&a, &b, &q})
+	variable.Trace("adder", []*variable.BitArray{&a, &b, &q})
 	// Reset Time
 	var time_counter int
 	for time_counter < 100 {
 		adder.Exec()
+		variable.Dump(time_counter)
 		time_counter++
 	}
 
@@ -30,9 +35,11 @@ func TestAdder(t *testing.T) {
 
 		// Evaluate DUT
 		adder.Exec()
-		fmt.Println(q.ToInt())
+		// fmt.Println(q.ToInt())
+		variable.Dump(time_counter)
 		time_counter++
 	}
+	variable.Close()
 }
 
 func TestAdderGoroutine(t *testing.T) {

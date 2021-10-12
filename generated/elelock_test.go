@@ -19,6 +19,15 @@ func TestElelock(t *testing.T) {
 	ke2.InitBitArray(1)
 	match.InitBitArray(1)
 	key_enbl.InitBitArray(1)
+	clk.SetId("clk")
+	reset.SetId("reset")
+	close.SetId("close")
+	tenkey.SetId("tenkey")
+	lock.SetId("lock")
+	ke1.SetId("ke1")
+	ke2.SetId("ke2")
+	match.SetId("match")
+	key_enbl.SetId("key_enbl")
 	SECRET_3.InitBitArray(4)
 	SECRET_2.InitBitArray(4)
 	SECRET_1.InitBitArray(4)
@@ -32,24 +41,38 @@ func TestElelock(t *testing.T) {
 	key[2] = &key2
 	key[3] = &key3
 	elelock := NewElelock(&Elelock{&clk, &reset, &close, &tenkey, &lock, &ke1, &ke2, &match, &key_enbl, &SECRET_3, &SECRET_2, &SECRET_1, &SECRET_0, key})
+	variable.Trace("elelock", []*variable.BitArray{&clk, &reset, &close, &tenkey, &lock, &ke1, &ke2, &match, &key_enbl})
 	// Reset Time
 	var time_counter int
 	for time_counter < 100 {
-		elelock.Exec()
+		variable.Dump(time_counter)
 		time_counter++
 	}
 
 	for time_counter < 500 {
 		if (time_counter % 5) == 0 {
-			clk.Set(clk.ToInt() + 1)
+			clk = clk.Not()
 		}
-		if (time_counter % 50) == 0 {
-			reset.Set(reset.ToInt() + 1)
+		if time_counter == 150 {
+			tenkey.Set(4)
+		}
+		if time_counter == 200 {
+			tenkey.Set(16)
+		}
+		if time_counter == 300 {
+			tenkey.Set(1)
+		}
+		if time_counter == 400 {
+			tenkey.Set(64)
+		}
+		if time_counter == 480 {
+			reset.Set(1)
 		}
 
 		// Evaluate DUT
 		elelock.Exec()
 		fmt.Println(lock.ToInt())
+		variable.Dump(time_counter)
 		time_counter++
 	}
 	// a.Set(2)
@@ -64,6 +87,7 @@ func TestElelock(t *testing.T) {
 	// b.Set(5)
 	// adder.Exec()
 	// assert.Equal(t, 2, q.ToInt())
+	variable.Close()
 }
 
 func TestElelockGoroutine(t *testing.T) {
