@@ -13,99 +13,99 @@ var leftBlock string
 var rightBlock string
 var AlwaysCounter = 0
 
-func AddPosedgeObserver(id string) {
-	Observer += InputIndent(1) + "args." + id + ".AddPosedgeObserver(args.PreAlways" + strconv.Itoa(AlwaysCounter) + ", args.Always" + strconv.Itoa(AlwaysCounter) + ", args.Exec)\n"
+func (b *Builder) AddPosedgeObserver(id string) {
+	b.observer.WriteString("args." + id + ".AddPosedgeObserver(args.PreAlways" + strconv.Itoa(AlwaysCounter) + ", args.Always" + strconv.Itoa(AlwaysCounter) + ", args.Exec)\n")
 }
 
-func AddNegedgeObserver(id string) {
-	Observer += InputIndent(1) + "args." + id + ".AddNegedgeObserver(args.PreAlways" + strconv.Itoa(AlwaysCounter) + ", args.Always" + strconv.Itoa(AlwaysCounter) + ", args.Exec)\n"
+func (b *Builder) AddNegedgeObserver(id string) {
+	b.observer.WriteString("args." + id + ".AddNegedgeObserver(args.PreAlways" + strconv.Itoa(AlwaysCounter) + ", args.Always" + strconv.Itoa(AlwaysCounter) + ", args.Exec)\n")
 }
 
-func CreateAlways() {
+func (b *Builder) CreateAlways() {
 	AlwaysCounter++
-	PreAlways += "func (" + ModuleName + " *" + ModuleName + ") PreAlways" + strconv.Itoa(AlwaysCounter) + "() []variable.BitArray{\n"
-	Always += "func (" + ModuleName + " *" + ModuleName + ") Always" + strconv.Itoa(AlwaysCounter) + "(vars []variable.BitArray){\n"
+	b.preAlways.WriteString("func (" + strings.Title(moduleName) + " *" + strings.Title(moduleName) + ") PreAlways" + strconv.Itoa(AlwaysCounter) + "() []variable.BitArray{\n")
+	b.always.WriteString("func (" + strings.Title(moduleName) + " *" + strings.Title(moduleName) + ") Always" + strconv.Itoa(AlwaysCounter) + "(vars []variable.BitArray){\n")
 	nonBlockingStatementCount = 0
-	declarateInput()
+	b.declarateInput()
 }
 
-func EndAlways() {
+func (b *Builder) EndAlways() {
 
-	PreAlways += leftBlock + createPreAlwaysReturn() + "}\n"
+	b.preAlways.WriteString(leftBlock + b.createPreAlwaysReturn() + "}\n")
 
-	Always += rightBlock + "}\n"
+	b.always.WriteString(rightBlock + "}\n")
 
 	leftBlock = ""
 	rightBlock = ""
 }
 
-func IfStart() {
+func (b *Builder) IfStart() {
 	ifBlock += "{\n"
 }
 
-func IfStatement(conditionalStatement string) {
-	leftConditionalStatement := checkInputSignal(conditionalStatement)
-	rightConditionalStatement := checkInput(conditionalStatement)
-	leftBlock += InputIndent(IfDepth) + "if variable.CheckBit(" + leftConditionalStatement + ") {\n"
-	rightBlock += InputIndent(IfDepth) + "if variable.CheckBit(" + rightConditionalStatement + ") {\n"
+func (b *Builder) IfStatement(conditionalStatement string) {
+	leftConditionalStatement := b.checkInputSignal(conditionalStatement)
+	rightConditionalStatement := b.checkInput(conditionalStatement)
+	leftBlock += "if variable.CheckBit(" + leftConditionalStatement + ") {\n"
+	rightBlock += "if variable.CheckBit(" + rightConditionalStatement + ") {\n"
 }
 
 // ifの条件内にinput信号があれば変数に変換する
-func checkInputSignal(conditionalStatement string) string {
-	for i, v := range Inputs {
-		if strings.Contains(conditionalStatement, ModuleName+"."+v.id) {
-			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, ModuleName+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
+func (b *Builder) checkInputSignal(conditionalStatement string) string {
+	for i, v := range b.inputs {
+		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
+			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
 		}
 	}
 	return conditionalStatement
 }
 
-func checkInput(conditionalStatement string) string {
-	for i, v := range Inputs {
-		if strings.Contains(conditionalStatement, ModuleName+"."+v.id) {
-			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, ModuleName+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
+func (b *Builder) checkInput(conditionalStatement string) string {
+	for i, v := range b.inputs {
+		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
+			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
 		}
 	}
 	return conditionalStatement
 }
 
-func ElseStatement() {
+func (b *Builder) ElseStatement() {
 	//直前の改行コードを削除
 	leftBlock = leftBlock[:len(leftBlock)-1] + " else{\n"
 	rightBlock = rightBlock[:len(rightBlock)-1] + " else{\n"
 }
 
-func EndIfStatement() {
-	leftBlock += InputIndent(IfDepth) + "}\n"
-	rightBlock += InputIndent(IfDepth) + "}\n"
+func (b *Builder) EndIfStatement() {
+	leftBlock += "}\n"
+	rightBlock += "}\n"
 }
 
-func declarateInput() {
-	for _, v := range Inputs {
+func (b *Builder) declarateInput() {
+	for _, v := range b.inputs {
 		nonBlockingStatementCount++
 		temp := "var" + strconv.Itoa(nonBlockingStatementCount)
-		PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(" + strconv.Itoa(v.length) + ", " + ModuleName + "." + v.id + ".ToInt())\n"
+		b.preAlways.WriteString(temp + " := *variable.CreateBitArray(" + strconv.Itoa(v.length) + ", " + strings.Title(moduleName) + "." + v.id + ".ToInt())\n")
 	}
 }
 
-func DeclarateVariable(exp string, dimensions []string) {
+func (b *Builder) DeclarateVariable(exp string, dimensions []string) {
 	nonBlockingStatementCount++
 	//一次格納する変数
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
 	alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
 	slice := strings.Split(exp, "<=")
 
-	PreAlways += InputIndent(1) + temp + " := *variable.CreateBitArray(8, 0)\n"
-	right := expression.CompileExpression(slice[1], ModuleName, dimensions)
+	b.preAlways.WriteString(temp + " := *variable.CreateBitArray(8, 0)\n")
+	right := expression.CompileExpression(slice[1], strings.Title(moduleName), dimensions)
 	if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right, "(")) {
 		right = "*" + right
 	}
-	leftBlock += InputIndent(IfDepth+1) + temp + ".Assign(" + right + ")\n"
-	rightBlock += InputIndent(IfDepth+1) + ModuleName + "." + slice[0] + ".Assign(" + alwaysTemp + ")\n"
+	leftBlock += temp + ".Assign(" + right + ")\n"
+	rightBlock += strings.Title(moduleName) + "." + slice[0] + ".Assign(" + alwaysTemp + ")\n"
 }
 
-func createPreAlwaysReturn() string {
-	result := InputIndent(1) + "return []variable.BitArray{"
+func (b *Builder) createPreAlwaysReturn() string {
+	result := "return []variable.BitArray{"
 	for i := 1; i <= nonBlockingStatementCount; i++ {
 		result += "var" + strconv.Itoa(i)
 		if i != nonBlockingStatementCount {

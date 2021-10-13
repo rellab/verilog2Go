@@ -7,21 +7,21 @@ import (
 var switchStatement, cases string
 
 func CreateCase(exp string, statement string) {
-	cases += InputIndent(1) + "case " + exp + ":\n"
+	cases += "case " + exp + ":\n"
 	terms := strings.Split(statement, "=")
-	cases += InputIndent(2) + terms[0] + ".Set(" + toInt(terms[1][:len(terms[1])-1]) + ")\n"
-	cases += InputIndent(2) + "break\n"
+	cases += terms[0] + ".Set(" + toInt(terms[1][:len(terms[1])-1]) + ")\n"
+	cases += "break\n"
 }
 
 func CreateSwitch(input string) {
-	switchStatement += InputIndent(1) + "switch " + input + ".ToInt()" + "{\n"
+	switchStatement += "switch " + input + ".ToInt()" + "{\n"
 	switchStatement += cases
-	switchStatement += InputIndent(1) + "}\n"
+	switchStatement += "}\n"
 }
 
-func CreateFunction(funcName string, input string, length string) {
-	Function += "\nfunc (" + ModuleName + " *" + ModuleName + ") " + funcName + "(" + input + " variable.BitArray) variable.BitArray {\n"
-	Function += InputIndent(1) + funcName + " := *variable.CreateBitArray(" + length + ", 0)\n"
-	Function += switchStatement
-	Function += InputIndent(1) + "return " + funcName + "\n}\n"
+func (b *Builder) CreateFunction(funcName string, input string, length string) {
+	b.function.WriteString("\nfunc (" + strings.Title(moduleName) + " *" + strings.Title(moduleName) + ") " + funcName + "(" + input + " variable.BitArray) variable.BitArray {\n")
+	b.function.WriteString(funcName + " := *variable.CreateBitArray(" + length + ", 0)\n")
+	b.function.WriteString(switchStatement)
+	b.function.WriteString("return " + funcName + "\n}\n")
 }

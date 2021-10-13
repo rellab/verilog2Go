@@ -19,7 +19,7 @@ func (s *CustomVerilogListener) ExitFunction_declaration(ctx *parser.Function_de
 	input := terms[1][:len(terms[1])-1]
 	terms = strings.Split(ctx.Range_or_type().GetText(), ":")
 	length := terms[0][1:len(terms[0])]
-	CreateFunction(methodName, input, length)
+	builder.CreateFunction(methodName, input, length)
 }
 
 // EnterFunction_case_statement is called when production function_case_statement is entered.

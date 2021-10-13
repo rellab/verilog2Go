@@ -1,176 +1,186 @@
 package builder
 
 import (
+	"bytes"
+	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
-var ModuleName string
-var moduleName string
-var Ports string
-var Inputs []Port
-var Constructor string
-var SubConstructor string
-var Observer string
-var Exec string
-var RunMethod string
-var PreAlways string
-var Always string
-var Function string
-var Source string
-
-// StartModule はモジュールの初期化を行う
-func StartModule(modName string) {
-	ModuleName = strings.Title(modName)
-	moduleName = modName
-	// ModuleName = moduleName
-	Exec = ""
+type Builder struct {
+	moduleName     string
+	ports          bytes.Buffer
+	inputs         []Port
+	constructor    bytes.Buffer
+	subConstructor bytes.Buffer
+	observer       bytes.Buffer
+	assigns        bytes.Buffer
+	instances      bytes.Buffer
+	// exec           bytes.Buffer
+	runMethod bytes.Buffer
+	preAlways bytes.Buffer
+	always    bytes.Buffer
+	function  bytes.Buffer
+	source    bytes.Buffer
 }
 
-// EndModule はモジュール内の要素を一つにまとめる
-func EndModule() {
-	Source = "package generated\n\n"
-	Source += "import \"github.com/verilog2Go/src/variable\"\n\n"
-	//ポートの宣言
-	Source += Ports + "\n"
-	//コンストラクタ
-	Source += Constructor
-	// 並列処理のコンストラクタ
-	Source += SubConstructor
-	//Exec
-	Exec = "func (" + moduleName + " *" + ModuleName + ") Exec() {\n" + Exec + "}\n\n"
-	Source += Exec
-	//RunMethod
-	Source += RunMethod
-	//PreAlways
-	Source += PreAlways
-	//Always
-	Source += Always
-	//Function
-	Source += Function
+// GenerateSource brings together the sources in a module
+func (b *Builder) generateSource() {
+	b.source.WriteString("package generated\n")
+	b.source.WriteString("import \"github.com/verilog2Go/src/variable\"\n")
+	b.source.WriteString(b.ports.String())
+	b.source.WriteString(b.constructor.String())
+	b.source.WriteString(b.subConstructor.String())
+	// b.source.WriteString(b.exec.String())
+	b.source.WriteString("func (" + moduleName + " *" + strings.Title(moduleName) + ") Exec() {\n" + b.assigns.String() + b.instances.String() + "}\n\n")
+	b.source.WriteString(b.runMethod.String())
+	b.source.WriteString(b.preAlways.String())
+	b.source.WriteString(b.always.String())
+	b.source.WriteString(b.function.String())
+}
+
+// WriteFile writes source to a file
+func (builder *Builder) WriteFile(filename string) {
+	os.Mkdir("generated", 0777)
+	file, err := os.OpenFile("generated/"+filename+".go", os.O_WRONLY|os.O_CREATE, 0666)
+	defer file.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	builder.generateSource()
+	file.Write(builder.source.Bytes())
+}
+
+var moduleName string
+
+// StartModule はモジュールの初期化を行う
+func (b *Builder) StartModule(modName string) {
+	moduleName = modName
 }
 
 //DeclarePorts はポートの宣言を行う
-func DeclarePorts(ports []Port) {
+func (b *Builder) DeclarePorts(ports []Port) {
 	if len(ports) < 1 {
 		return
 	}
-	Ports = "type " + ModuleName + " struct{\n" + InputIndent(1)
+	b.ports.WriteString("type " + strings.Title(moduleName) + " struct{\n")
 	dimensions := ""
 	for i := 0; i < len(ports); i++ {
-		if !ports[i].isDimension {
-			Ports += ports[i].id + ", "
+		if i < len(ports)-1 {
+			if !ports[i].isDimension {
+				b.ports.WriteString(ports[i].id + ", ")
+			} else {
+				dimensions += ports[i].id + ", "
+			}
 		} else {
-			dimensions += ports[i].id + ", "
+			if !ports[i].isDimension {
+				b.ports.WriteString(ports[i].id)
+			} else {
+				dimensions += ports[i].id
+			}
 		}
 	}
-	Ports = Ports[:len(Ports)-2]
-	Ports += " *variable.BitArray\n"
+	// b.ports = b.ports[:len(b.ports)-2]
+	b.ports.WriteString(" *variable.BitArray\n")
 	if dimensions != "" {
 		dimensions = dimensions[:len(dimensions)-2]
-		Ports += InputIndent(1) + dimensions + " []*variable.BitArray\n"
+		b.ports.WriteString(dimensions + " []*variable.BitArray\n")
 	}
-	Ports += "}\n"
+	b.ports.WriteString("}\n")
 }
 
 // DeclareInput はinput信号の配列を作成する
-func DeclareInput(input Port) {
-	Inputs = append(Inputs, input)
+func (b *Builder) DeclareInput(input Port) {
+	b.inputs = append(b.inputs, input)
 }
 
 // CreateConstructor はコンストラクタを生成する
-func CreateConstructor(funcName string, ports []Port, params []Param) {
+func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Param) {
 	if len(ports) < 1 {
 		return
 	}
 	//コンストラクタの１行目
-	ConstructorArgument := "func New" + strings.Title(funcName) + "(args *" + ModuleName + ") " + ModuleName + "{\n"
+	ConstructorArgument := "func New" + strings.Title(funcName) + "(args *" + strings.Title(moduleName) + ") " + strings.Title(moduleName) + "{\n"
 
-	Constructor = ConstructorArgument + Observer
+	b.constructor.WriteString(ConstructorArgument)
+	b.constructor.WriteString(b.observer.String())
 
 	if len(params) > 0 {
 		for _, v := range params {
-			Constructor += InputIndent(1) + "args." + v.id + " = " + v.initiation + "\n"
+			b.constructor.WriteString("args." + v.id + " = " + v.initiation + "\n")
 		}
 	}
 
-	Constructor += InputIndent(1) + "return *args\n}\n\n"
+	b.constructor.WriteString("return *args\n}\n\n")
 
-	SubConstructor = "func NewGoroutine" + strings.Title(funcName) + " (in []chan int, out []chan int) *" + ModuleName + "{\n"
-	SubConstructor += InputIndent(1) + ModuleName + " := &" + strings.Title(ModuleName) + "{"
-	if len(ports) > 0 {
-		for _, v := range ports {
-			SubConstructor += "variable.NewBitArray(" + strconv.Itoa(v.length) + "), "
+	b.subConstructor.WriteString("func NewGoroutine" + strings.Title(funcName) + " (in []chan int, out []chan int) *" + strings.Title(moduleName) + "{\n")
+	b.subConstructor.WriteString(moduleName + " := &" + strings.Title(moduleName) + "{")
+	for i := 0; i < len(ports); i++ {
+		if i < len(ports)-1 {
+			b.subConstructor.WriteString("variable.NewBitArray(" + strconv.Itoa(ports[i].length) + "), ")
+		} else {
+			b.subConstructor.WriteString("variable.NewBitArray(" + strconv.Itoa(ports[i].length) + ")}\n")
 		}
-		SubConstructor = SubConstructor[:len(SubConstructor)-2] + "}\n"
 	}
-	SubConstructor += InputIndent(1) + "go " + ModuleName + ".run(in, out)\n"
-	SubConstructor += InputIndent(1) + "return " + ModuleName + "\n}\n\n"
+	b.subConstructor.WriteString("go " + moduleName + ".run(in, out)\n")
+	b.subConstructor.WriteString("return " + moduleName + "\n}\n\n")
 }
 
-func CreateRunMethod(ports []Port) {
+func (b *Builder) CreateRunMethod(ports []Port) {
 	var inCounter, outCounter int
-	RunMethod = "func (" + moduleName + " *" + ModuleName + ") run(in []chan int, out []chan int) {\n"
+	b.runMethod.WriteString("func (" + moduleName + " *" + strings.Title(moduleName) + ") run(in []chan int, out []chan int) {\n")
 	for _, v := range ports {
 		if v.portType == "output" {
-			RunMethod += InputIndent(1) + "defer close(out[" + strconv.Itoa(outCounter) + "])\n"
+			b.runMethod.WriteString("defer close(out[" + strconv.Itoa(outCounter) + "])\n")
 			outCounter++
 		}
 	}
-	RunMethod += InputIndent(1) + "for {\n" + InputIndent(2) + "select {\n"
+	b.runMethod.WriteString("for {\n" + "select {\n")
 	for _, v := range ports {
 		if v.portType == "input" {
-			RunMethod += InputIndent(2) + "case v, ok := <-in[" + strconv.Itoa(inCounter) + "]:\n"
-			RunMethod += InputIndent(3) + "if ok {\n"
-			RunMethod += InputIndent(4) + moduleName + "." + v.id + ".Set(v)\n"
+			b.runMethod.WriteString("case v, ok := <-in[" + strconv.Itoa(inCounter) + "]:\n")
+			b.runMethod.WriteString("if ok {\n")
+			b.runMethod.WriteString(moduleName + "." + v.id + ".Set(v)\n")
 			// if AlwaysCounter != 0 {
 			for i := 1; i <= AlwaysCounter; i++ {
-				RunMethod += InputIndent(4) + "bitArrays" + strconv.Itoa(i) + " := " + moduleName + ".PreAlways" + strconv.Itoa(i) + "()\n"
+				b.runMethod.WriteString("bitArrays" + strconv.Itoa(i) + " := " + moduleName + ".PreAlways" + strconv.Itoa(i) + "()\n")
 			}
 			for i := 1; i <= AlwaysCounter; i++ {
-				RunMethod += InputIndent(4) + moduleName + ".Always" + strconv.Itoa(i) + "(bitArrays" + strconv.Itoa(i) + ")\n"
+				b.runMethod.WriteString(moduleName + ".Always" + strconv.Itoa(i) + "(bitArrays" + strconv.Itoa(i) + ")\n")
 			}
 			// }
-			RunMethod += InputIndent(4) + moduleName + ".Exec()\n"
+			b.runMethod.WriteString(moduleName + ".Exec()\n")
 			var count int
 			for _, v := range ports {
 				if v.portType == "output" {
-					RunMethod += InputIndent(4) + "out[" + strconv.Itoa(count) + "] <- " + moduleName + "." + v.id + ".ToInt()\n"
+					b.runMethod.WriteString("out[" + strconv.Itoa(count) + "] <- " + moduleName + "." + v.id + ".ToInt()\n")
 					count++
 				}
 			}
-			RunMethod += InputIndent(3) + "} else {\n" + InputIndent(4) + "return \n" + InputIndent(3) + "}\n"
+			b.runMethod.WriteString("} else {\n" + "return \n" + "}\n")
 			inCounter++
 		}
 	}
-	RunMethod += InputIndent(2) + "}\n" + InputIndent(1) + "}\n"
-	RunMethod += "}\n\n"
+	b.runMethod.WriteString("}\n" + "}\n")
+	b.runMethod.WriteString("}\n\n")
 }
 
-// CreateExec はExecを生成する
-func CreateExec(id string, expression string) {
-	Exec += InputIndent(1) + moduleName + "." + id + ".Assign(" + expression + ")\n"
+func (b *Builder) CreateAssign(id string, expression string) {
+	b.assigns.WriteString(moduleName + "." + id + ".Assign(" + expression + ")\n")
 }
 
-// CreateInstance はインスタンス化を生成する
-func CreateInstance(instance Instance) {
-	// fmt.Println(instance.instanceName)
-	Exec += InputIndent(1) + instance.instanceName + " := " + strings.Title(instance.moduleName) + "(&" + instance.moduleName + "{"
+// CreateInstance creates an instantiation
+func (b *Builder) CreateInstance(instance Instance) {
+	b.instances.WriteString(instance.instanceName + " := " + strings.Title(instance.moduleName) + "(&" + instance.moduleName + "{")
+	var tmp string
 	for _, exp := range instance.ports {
-		Exec += exp + ", "
+		tmp += exp + ", "
 	}
 
 	for key, exp := range instance.portMap {
-		Exec += key + " : " + exp + ", "
+		tmp += key + " : " + exp + ", "
 	}
-	Exec = Exec[:len(Exec)-2]
-	Exec += "})\n" + InputIndent(1) + instance.instanceName + ".Exec()\n"
-}
-
-func InputIndent(indent int) string {
-	var result string
-	for i := 0; i < indent*4; i++ {
-		result += " "
-	}
-	return result
+	tmp = tmp[:len(tmp)-2]
+	b.instances.WriteString(tmp + "})\n" + instance.instanceName + ".Exec()\n")
 }

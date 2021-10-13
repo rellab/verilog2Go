@@ -30,6 +30,7 @@ type Param struct {
 	initiation string
 }
 
+var builder Builder
 var isInstance bool
 
 // NewVerilogListener はリスナーの初期化を行う
@@ -38,9 +39,14 @@ func NewVerilogListener() *CustomVerilogListener {
 }
 
 // ExitSource_text is called when production source_text is exited.
+func (s *CustomVerilogListener) EnterSource_text(ctx *parser.Source_textContext) {
+	builder = Builder{}
+}
+
+// ExitSource_text is called when production source_text is exited.
 func (s *CustomVerilogListener) ExitSource_text(ctx *parser.Source_textContext) {
 	//パース終了
-	EndModule()
+	builder.WriteFile(moduleName)
 }
 
 // EnterModule_declaration is called when production module_declaration is entered.
@@ -52,7 +58,7 @@ func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_decla
 // ExitModule_identifier is called when production module_identifier is exited.
 func (s *CustomVerilogListener) ExitModule_identifier(ctx *parser.Module_identifierContext) {
 	if !isInstance {
-		StartModule(ctx.GetText())
+		builder.StartModule(ctx.GetText())
 	}
 	isInstance = true
 }
@@ -60,9 +66,9 @@ func (s *CustomVerilogListener) ExitModule_identifier(ctx *parser.Module_identif
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
 	// StartModule(ctx.Module_identifier().GetText())
-	DeclarePorts(s.ports)
-	CreateConstructor(ctx.Module_identifier().GetText(), s.ports, s.params)
-	CreateRunMethod(s.ports)
+	builder.DeclarePorts(s.ports)
+	builder.CreateConstructor(ctx.Module_identifier().GetText(), s.ports, s.params)
+	builder.CreateRunMethod(s.ports)
 }
 
 // ExitInput_declaration is called when production Input_declaration is exited.
@@ -88,7 +94,7 @@ func (s *CustomVerilogListener) ExitInput_declaration(ctx *parser.Input_declarat
 			s.currentPort.portType = "input"
 		}
 		s.ports = append(s.ports, s.currentPort)
-		DeclareInput(s.currentPort)
+		builder.DeclareInput(s.currentPort)
 	}
 }
 
@@ -176,7 +182,7 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 	s.ports = append(s.ports, s.currentPort)
 	s.params = append(s.params, Param{
 		id:         s.currentPort.id,
-		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), ModuleName, s.dimensions),
+		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), moduleName, s.dimensions),
 	})
 }
 
@@ -188,5 +194,5 @@ func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
 
 // ExitNet_assignment is called when production net_assignment is exited.
 func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentContext) {
-	CreateExec(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), moduleName, s.dimensions))
+	builder.CreateAssign(ctx.Net_lvalue().GetText(), expression.CompileExpression(ctx.Expression().GetText(), moduleName, s.dimensions))
 }
