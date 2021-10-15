@@ -44,11 +44,11 @@ func (s *CustomVerilogListener) ExitFunction_case_item(ctx *parser.Function_case
 	}
 }
 
-// caseの条件式をintに変換
+// Convert conditional expression of case to int
 func toInt(str string) (result string) {
 	ports := strings.Split(str, "[")
 	values := strings.Split(str, "'")
-	//ポート名[ビット]
+	//Portname [bit]s
 	result = str
 	if len(ports) > 1 {
 		result = ports[0] + ".Get(" + strings.TrimRight(ports[1], "]") + ")"

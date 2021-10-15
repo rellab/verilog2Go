@@ -8,7 +8,7 @@ import (
 	"github.com/verilog2Go/src/expression"
 )
 
-// CustomVerilogListener はBaseVerilogListenerを構造体として宣言
+// CustomVerilogListener declares BaseVerilogListener as a structure
 type CustomVerilogListener struct {
 	*parser.BaseVerilogListener
 	ports       []Port
@@ -17,7 +17,7 @@ type CustomVerilogListener struct {
 	currentPort Port
 }
 
-//Port はポートのidとビット数を持つ構造体
+//Port is a structure with the id and number of bits of the port
 type Port struct {
 	id          string
 	length      int
@@ -33,7 +33,7 @@ type Param struct {
 var builder Builder
 var isInstance bool
 
-// NewVerilogListener はリスナーの初期化を行う
+// NewVerilogListener initializes the listener
 func NewVerilogListener() *CustomVerilogListener {
 	return &CustomVerilogListener{}
 }
@@ -45,13 +45,13 @@ func (s *CustomVerilogListener) EnterSource_text(ctx *parser.Source_textContext)
 
 // ExitSource_text is called when production source_text is exited.
 func (s *CustomVerilogListener) ExitSource_text(ctx *parser.Source_textContext) {
-	//パース終了
+	//End of perse
 	builder.WriteFile(moduleName)
 }
 
 // EnterModule_declaration is called when production module_declaration is entered.
 func (s *CustomVerilogListener) EnterModule_declaration(ctx *parser.Module_declarationContext) {
-	//モジュールの初期化
+	//Module initialization
 	isInstance = false
 }
 
@@ -188,7 +188,7 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 
 // ExitRange_ is called when production range_ is exited.
 func (s *CustomVerilogListener) ExitRange_(ctx *parser.Range_Context) {
-	//文字列をintに変換
+	//Convert string to int
 	s.currentPort.length, _ = strconv.Atoi(ctx.Msb_constant_expression().GetText())
 }
 

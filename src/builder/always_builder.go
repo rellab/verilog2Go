@@ -50,7 +50,7 @@ func (b *Builder) IfStatement(conditionalStatement string) {
 	rightBlock += "if variable.CheckBit(" + rightConditionalStatement + ") {\n"
 }
 
-// ifの条件内にinput信号があれば変数に変換する
+// If there is an input signal in the if condition, convert it to a variable
 func (b *Builder) checkInputSignal(conditionalStatement string) string {
 	for i, v := range b.inputs {
 		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
@@ -70,7 +70,7 @@ func (b *Builder) checkInput(conditionalStatement string) string {
 }
 
 func (b *Builder) ElseStatement() {
-	//直前の改行コードを削除
+	//Delete the previous line feed code
 	leftBlock = leftBlock[:len(leftBlock)-1] + " else{\n"
 	rightBlock = rightBlock[:len(rightBlock)-1] + " else{\n"
 }
@@ -90,7 +90,7 @@ func (b *Builder) declarateInput() {
 
 func (b *Builder) DeclarateVariable(exp string, dimensions []string) {
 	nonBlockingStatementCount++
-	//一次格納する変数
+	//Variables for primary storage
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
 	alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
 	slice := strings.Split(exp, "<=")

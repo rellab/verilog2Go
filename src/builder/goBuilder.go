@@ -17,12 +17,11 @@ type Builder struct {
 	observer       bytes.Buffer
 	assigns        bytes.Buffer
 	instances      bytes.Buffer
-	// exec           bytes.Buffer
-	runMethod bytes.Buffer
-	preAlways bytes.Buffer
-	always    bytes.Buffer
-	function  bytes.Buffer
-	source    bytes.Buffer
+	runMethod      bytes.Buffer
+	preAlways      bytes.Buffer
+	always         bytes.Buffer
+	function       bytes.Buffer
+	source         bytes.Buffer
 }
 
 // GenerateSource brings together the sources in a module
@@ -32,7 +31,6 @@ func (b *Builder) generateSource() {
 	b.source.WriteString(b.ports.String())
 	b.source.WriteString(b.constructor.String())
 	b.source.WriteString(b.subConstructor.String())
-	// b.source.WriteString(b.exec.String())
 	b.source.WriteString("func (" + moduleName + " *" + strings.Title(moduleName) + ") Exec() {\n" + b.assigns.String() + b.instances.String() + "}\n\n")
 	b.source.WriteString(b.runMethod.String())
 	b.source.WriteString(b.preAlways.String())
@@ -54,12 +52,12 @@ func (builder *Builder) WriteFile(filename string) {
 
 var moduleName string
 
-// StartModule はモジュールの初期化を行う
+// StartModule initializes the module
 func (b *Builder) StartModule(modName string) {
 	moduleName = modName
 }
 
-//DeclarePorts はポートの宣言を行う
+//DeclarePorts declares ports
 func (b *Builder) DeclarePorts(ports []Port) {
 	if len(ports) < 1 {
 		return
@@ -90,17 +88,17 @@ func (b *Builder) DeclarePorts(ports []Port) {
 	b.ports.WriteString("}\n")
 }
 
-// DeclareInput はinput信号の配列を作成する
+// DeclareInput creates an array of input signals
 func (b *Builder) DeclareInput(input Port) {
 	b.inputs = append(b.inputs, input)
 }
 
-// CreateConstructor はコンストラクタを生成する
+// CreateConstructor creates a constructor
 func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Param) {
 	if len(ports) < 1 {
 		return
 	}
-	//コンストラクタの１行目
+	//First line of constructor
 	ConstructorArgument := "func New" + strings.Title(funcName) + "(args *" + strings.Title(moduleName) + ") " + strings.Title(moduleName) + "{\n"
 
 	b.constructor.WriteString(ConstructorArgument)

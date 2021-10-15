@@ -10,7 +10,7 @@ import (
 type Instance struct {
 	moduleName   string
 	instanceName string
-	//ordered_portの場合はports、named_portの場合はportMapを使う
+	//Use ports for ordered_port and portMap for named_port
 	ports   []string
 	portMap map[string]string
 }
@@ -19,14 +19,14 @@ var instance Instance
 
 // EnterModule_instantiation is called when production module_instantiation is exited.
 func (s *CustomVerilogListener) EnterModule_instantiation(ctx *parser.Module_instantiationContext) {
-	//インスタンスの初期化
+	//Instance initialization
 	instance = Instance{}
 	instance.portMap = map[string]string{}
 }
 
 // ExitModule_instantiation is called when production module_instantiation is exited.
 func (s *CustomVerilogListener) ExitModule_instantiation(ctx *parser.Module_instantiationContext) {
-	//インスタンスの情報をBuilderに渡す
+	//Pass instance information to Builder
 	instance.moduleName = ctx.Module_identifier().GetText()
 	builder.CreateInstance(instance)
 }
