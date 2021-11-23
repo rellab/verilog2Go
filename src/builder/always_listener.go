@@ -67,17 +67,21 @@ func (s *CustomVerilogListener) ExitConditional_statement(ctx *parser.Conditiona
 
 // EnterStatement_or_null is called when production statement_or_null is entered.
 func (s *CustomVerilogListener) EnterStatement_or_null(ctx *parser.Statement_or_nullContext) {
-	//Judgment whether it is an else statement
-	statementCount++
-	if statementCount == 2 {
-		builder.ElseStatement()
+	// For if statement
+	if IfDepth > 0 {
+		//Judgment whether it is an else statement
+		statementCount++
+		if statementCount == 2 {
+			builder.ElseStatement()
+		}
 	}
 }
 
 // ExitStatement_or_null is called when production statement_or_null is exited.
 func (s *CustomVerilogListener) ExitStatement_or_null(ctx *parser.Statement_or_nullContext) {
-	//Start accepting processing in if statement
+	// For if statement
 	if IfDepth > 0 {
+		//Start accepting processing in if statement
 		builder.EndIfStatement()
 	}
 }

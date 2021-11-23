@@ -1,6 +1,7 @@
 package builder
 
 import (
+	"bytes"
 	"strconv"
 	"strings"
 
@@ -40,7 +41,21 @@ func NewVerilogListener() *CustomVerilogListener {
 
 // ExitSource_text is called when production source_text is exited.
 func (s *CustomVerilogListener) EnterSource_text(ctx *parser.Source_textContext) {
-	builder = Builder{}
+	builder = Builder{
+		moduleName:     "",
+		ports:          bytes.NewBuffer(make([]byte, 0, 100)),
+		inputs:         []Port{},
+		constructor:    bytes.NewBuffer(make([]byte, 0, 100)),
+		subConstructor: bytes.NewBuffer(make([]byte, 0, 100)),
+		observer:       bytes.NewBuffer(make([]byte, 0, 100)),
+		assigns:        bytes.NewBuffer(make([]byte, 0, 100)),
+		instances:      bytes.NewBuffer(make([]byte, 0, 100)),
+		runMethod:      bytes.NewBuffer(make([]byte, 0, 100)),
+		preAlways:      bytes.NewBuffer(make([]byte, 0, 100)),
+		always:         bytes.NewBuffer(make([]byte, 0, 100)),
+		function:       bytes.NewBuffer(make([]byte, 0, 100)),
+		source:         bytes.NewBuffer(make([]byte, 0, 1000)),
+	}
 }
 
 // ExitSource_text is called when production source_text is exited.

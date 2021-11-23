@@ -5,12 +5,11 @@ module alu(a, b, f, s);
  input [15:0] a, b;
  input [4:0] 	f;
  output [15:0] s;
- reg  [15:0] 	 s;
  wire [15:0] x, y;
 
  assign x = a + 16'h8000;
  assign y = b + 16'h8000;
-  
+
  always @(a or b or x or y or f)
    case(f)
      `ADD : s = b + a;

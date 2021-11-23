@@ -10,18 +10,18 @@ import (
 
 type Builder struct {
 	moduleName     string
-	ports          bytes.Buffer
+	ports          *bytes.Buffer
 	inputs         []Port
-	constructor    bytes.Buffer
-	subConstructor bytes.Buffer
-	observer       bytes.Buffer
-	assigns        bytes.Buffer
-	instances      bytes.Buffer
-	runMethod      bytes.Buffer
-	preAlways      bytes.Buffer
-	always         bytes.Buffer
-	function       bytes.Buffer
-	source         bytes.Buffer
+	constructor    *bytes.Buffer
+	subConstructor *bytes.Buffer
+	observer       *bytes.Buffer
+	assigns        *bytes.Buffer
+	instances      *bytes.Buffer
+	runMethod      *bytes.Buffer
+	preAlways      *bytes.Buffer
+	always         *bytes.Buffer
+	function       *bytes.Buffer
+	source         *bytes.Buffer
 }
 
 // GenerateSource brings together the sources in a module
