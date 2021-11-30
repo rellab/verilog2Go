@@ -17,8 +17,10 @@ func Preprocess(sourceFile string) string {
 	defer fp.Close()
 	var source []string
 	defmap := map[string]string{}
-	includeReg := `include\s*"(\w+).v"`
+	includeReg := `include\s*"(\w+).(\w+)"`
 	reg := "\\`(\\w+)"
+	defReg := `define\s*(\w+)\s*(\w+)'(\w+)`
+	defRegex := regexp.MustCompile(defReg)
 	includeRegex := regexp.MustCompile(includeReg)
 	regex := regexp.MustCompile(reg)
 	scanner := bufio.NewScanner(fp)
@@ -29,6 +31,9 @@ func Preprocess(sourceFile string) string {
 			// Handling of include files
 			a := includeRegex.FindStringSubmatch(line)
 			defmap = searchDefs(filepath.Dir(sourceFile) + "/" + a[1] + ".v")
+		} else if defRegex.Match([]byte(line)) {
+			a := defRegex.FindStringSubmatch(scanner.Text())
+			defmap[a[1]] = a[2] + "'" + a[3]
 		} else if regex.Match([]byte(line)) {
 			// Substitution of define statement
 			source = append(source, replaceStr(line, defmap))

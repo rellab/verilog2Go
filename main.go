@@ -10,7 +10,6 @@ import (
 	"github.com/verilog2Go/src/preprocess"
 )
 import (
-	"fmt"
 	"os"
 )
 
@@ -42,7 +41,7 @@ func main() {
 	// 	panic(err)
 	// }
 	str := preprocess.Preprocess(sourceFile)
-	fmt.Println(str)
+	// fmt.Println(str)
 	input := antlr.NewInputStream(str)
 	//create lexer
 	lexer := parser.NewVerilogLexer(input)
