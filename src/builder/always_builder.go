@@ -32,7 +32,7 @@ func (b *Builder) CreateAlways() {
 func (b *Builder) EndAlways() {
 
 	b.preAlways.WriteString(leftBlock + b.createPreAlwaysReturn() + "}\n")
-
+	b.always.WriteString(switchStatement)
 	b.always.WriteString(rightBlock + "}\n")
 
 	leftBlock = ""
@@ -115,4 +115,18 @@ func (b *Builder) createPreAlwaysReturn() string {
 		}
 	}
 	return result
+}
+
+func (s *CustomVerilogListener) CreateAlwaysCase(exp string, statement string) {
+	cases += "case " + exp + ":\n"
+	index := strings.Index(statement, "=")
+	cases += expression.CompileExpression(statement[:index], strings.Title(moduleName), s.dimensions) + ".Substitute(" + expression.CompileExpression(statement[index+1:len(statement)-1], strings.Title(moduleName), s.dimensions) + ")\n"
+	cases += "break\n"
+}
+
+func (s *CustomVerilogListener) CreateDefault(statement string) {
+	cases += "default:\n"
+	index := strings.Index(statement, "=")
+	cases += expression.CompileExpression(statement[:index], strings.Title(moduleName), s.dimensions) + ".Substitute(*" + expression.CompileExpression(statement[index+1:len(statement)-1], strings.Title(moduleName), s.dimensions) + ")\n"
+	cases += "break\n"
 }

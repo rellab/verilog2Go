@@ -188,6 +188,7 @@ func (s *CustomVerilogListener) ExitNet_declaration(ctx *parser.Net_declarationC
 			s.currentPort.portType = "net"
 		}
 		s.ports = append(s.ports, s.currentPort)
+		builder.DeclareInput(s.currentPort)
 	}
 }
 

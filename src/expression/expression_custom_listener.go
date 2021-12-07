@@ -1,7 +1,6 @@
 package expression
 
 import (
-	"strconv"
 	"strings"
 
 	parser "github.com/verilog2Go/antlr/expression"
@@ -64,26 +63,27 @@ func ToInt(str string) (result string) {
 		}
 		result = ports[0] + ".Get(" + strings.TrimRight(ports[1], "]") + ")"
 	} else if len(values) > 1 {
-		var value int64
-		length := values[0]
-		switch values[1][0] {
-		case 'b':
-			// strValue = fmt.Sprintf("%b", value)
-			value, _ = strconv.ParseInt(values[1][1:], 2, 64)
-			break
-		case 'o':
-			value, _ = strconv.ParseInt(values[1][1:], 8, 64)
-			break
-		case 'd':
-			value, _ = strconv.ParseInt(values[1][1:], 10, 64)
-			break
-		case 'h':
-			value, _ = strconv.ParseInt(values[1][1:], 16, 64)
-			break
-		default:
-			break
-		}
-		result = "variable.CreateBitArray(" + length + ", " + strconv.FormatInt(value, 10) + ")"
+		// var value int64
+		// length := values[0]
+		// switch values[1][0] {
+		// case 'b':
+		// 	// strValue = fmt.Sprintf("%b", value)
+		// 	value, _ = strconv.ParseInt(values[1][1:], 2, 64)
+		// 	break
+		// case 'o':
+		// 	value, _ = strconv.ParseInt(values[1][1:], 8, 64)
+		// 	break
+		// case 'd':
+		// 	value, _ = strconv.ParseInt(values[1][1:], 10, 64)
+		// 	break
+		// case 'h':
+		// 	value, _ = strconv.ParseInt(values[1][1:], 16, 64)
+		// 	break
+		// default:
+		// 	break
+		// }
+		// result = "variable.CreateBitArray(" + length + ", " + strconv.FormatInt(value, 10) + ")"
+		result = "variable.CreateBits(\"" + str + "\")"
 	}
 	return
 }

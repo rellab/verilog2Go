@@ -91,3 +91,16 @@ func (s *CustomVerilogListener) ExitNonblocking_assignment(ctx *parser.Nonblocki
 	//Non-blocking assignment statement
 	builder.DeclarateVariable(ctx.GetText(), s.dimensions)
 }
+
+func (s *CustomVerilogListener) ExitCase_statement(ctx *parser.Case_statementContext) {
+	CreateSwitch(expression.CompileExpression(ctx.Expression().GetText(), strings.Title(moduleName), s.dimensions))
+}
+
+// ExitCase_item is called when production Case_item is exited.
+func (s *CustomVerilogListener) ExitCase_item(ctx *parser.Case_itemContext) {
+	if len(ctx.AllExpression()) != 0 {
+		s.CreateAlwaysCase(toInt(ctx.Expression(0).GetText()), ctx.Statement_or_null().GetText())
+	} else {
+		s.CreateDefault(ctx.Statement_or_null().GetText())
+	}
+}

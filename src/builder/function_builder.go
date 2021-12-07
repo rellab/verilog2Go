@@ -24,4 +24,6 @@ func (b *Builder) CreateFunction(funcName string, input string, length string) {
 	b.function.WriteString(funcName + " := *variable.CreateBitArray(" + length + ", 0)\n")
 	b.function.WriteString(switchStatement)
 	b.function.WriteString("return " + funcName + "\n}\n")
+	cases = ""
+	switchStatement = ""
 }

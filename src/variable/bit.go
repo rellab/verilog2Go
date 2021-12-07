@@ -102,6 +102,39 @@ func (ba *BitArray) GetBits() []Bit {
 	return ba.bits
 }
 
+func CreateBits(value string) *BitArray {
+	// value => ("4'b1111")
+	// value holds the value of each bit as a string type
+	values := strings.Split(value, "'")
+	length, _ := strconv.Atoi(values[0])
+	result := NewBitArray(length)
+	var res int64
+	var ok error
+	str := values[1][1:]
+	switch values[1][0] {
+	case 'b':
+		res, ok = strconv.ParseInt(str, 2, 64)
+		break
+	case 'o':
+		res, ok = strconv.ParseInt(str, 8, 64)
+		break
+	case 'd':
+		res, ok = strconv.ParseInt(str, 10, 64)
+		break
+	case 'h':
+		res, ok = strconv.ParseInt(str, 16, 64)
+		break
+	default:
+		break
+	}
+	if ok == nil {
+		result.Set(int(res))
+	} else {
+		result.toIndef()
+	}
+	return result
+}
+
 // CreateBitArray はvalueの値を持つBirArrayを返す
 func CreateBitArray(length int, value int) *BitArray {
 	var result BitArray
@@ -169,6 +202,12 @@ func (ba *BitArray) toIndef() {
 	}
 }
 
+func (ba *BitArray) Substitute(input BitArray) {
+	for i, _ := range ba.bits {
+		ba.bits[i] = input.bits[i]
+	}
+}
+
 //Add はポート同士の加算を行う
 func (ba BitArray) Add(input BitArray) BitArray {
 	var result BitArray
@@ -214,10 +253,48 @@ func (ba BitArray) Mul(input BitArray) BitArray {
 	return result
 }
 
+func (ba BitArray) SHL(input BitArray) BitArray {
+	var result BitArray
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a<<b, length)
+	}
+	return result
+}
+
+func (ba BitArray) SHR(input BitArray) BitArray {
+	var result BitArray
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a>>b, length)
+	}
+	return result
+}
+
 func (ba BitArray) And(input BitArray) BitArray {
 	a := ba.ToInt()
 	b := input.ToInt()
-	if a == b {
+	if a > 0 && b > 0 {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) Or(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a > 0 || b > 0 {
 		return *CreateBitArray(0, 1)
 	} else {
 		return *CreateBitArray(0, 0)
@@ -279,6 +356,26 @@ func (ba *BitArray) Not() BitArray {
 	return result
 }
 
+func (ba *BitArray) Neg() BitArray {
+	length := len(ba.bits)
+	var result BitArray
+	result.InitBitArray(length)
+	for i := 0; i < length; i++ {
+		result.bits[i].value = !ba.bits[i].value
+	}
+	return result
+}
+
+func (ba *BitArray) Bnot() BitArray {
+	length := len(ba.bits)
+	var result BitArray
+	result.InitBitArray(length)
+	for i := 0; i < length; i++ {
+		result.bits[i].value = !ba.bits[i].value
+	}
+	return result
+}
+
 func (ba *BitArray) Reductionor() BitArray {
 	length := len(ba.bits)
 	var result BitArray
@@ -296,6 +393,56 @@ func (ba BitArray) Equal(input BitArray) BitArray {
 	a := ba.ToInt()
 	b := input.ToInt()
 	if a == b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) NE(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a != b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) GE(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a >= b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) LE(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a <= b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) GT(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a > b {
+		return *CreateBitArray(0, 1)
+	} else {
+		return *CreateBitArray(0, 0)
+	}
+}
+
+func (ba BitArray) LT(input BitArray) BitArray {
+	a := ba.ToInt()
+	b := input.ToInt()
+	if a < b {
 		return *CreateBitArray(0, 1)
 	} else {
 		return *CreateBitArray(0, 0)
