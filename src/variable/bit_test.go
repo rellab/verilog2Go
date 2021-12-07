@@ -7,7 +7,7 @@ import (
 )
 
 func TestInitialize(t *testing.T) {
-	bit := Bit{false}
+	bit := Bit{false, false, false}
 	assert.Equal(t, false, bit.value)
 }
 
@@ -99,4 +99,19 @@ func TestAssign(t *testing.T) {
 	b.InitBitArray(3)
 	b.Assign(a)
 	assert.Equal(t, 2, b.ToInt())
+}
+
+func TestSetBits(t *testing.T) {
+	var a BitArray
+	a.InitBitArray(3)
+	a.SetBits("3'b110")
+	var b BitArray
+	b.InitBitArray(3)
+	b.SetBits("3'b11x")
+	// fmt.Println(a)
+	// fmt.Println(searchIndef(a))
+	// fmt.Println(a)
+	// fmt.Println(b)
+	assert.Equal(t, 6, a.ToInt())
+	assert.Equal(t, 0, b.ToInt())
 }

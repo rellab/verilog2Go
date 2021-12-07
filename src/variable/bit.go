@@ -1,8 +1,15 @@
 package variable
 
+import (
+	"strconv"
+	"strings"
+)
+
 // Bit はビットを構造体で定義
 type Bit struct {
-	value bool
+	value         bool
+	indefVal      bool
+	highInpedance bool
 }
 
 // BitArray はビットの配列を構造体で定義
@@ -18,7 +25,7 @@ type BitArray struct {
 func (ba *BitArray) InitBitArray(length int) {
 	ba.bits = make([]Bit, length)
 	for i := 0; i < length; i++ {
-		bit := Bit{false}
+		bit := Bit{false, false, false}
 		ba.bits[i] = bit
 	}
 }
@@ -38,6 +45,37 @@ func (ba *BitArray) Set(value int) {
 		ba.bits[length-i].value = (((value << i) & comparison) >> length) == 1
 	}
 	notify(*ba, preValue)
+}
+
+func (ba *BitArray) SetBits(value string) {
+	// value => ("4'b1111")
+	// value holds the value of each bit as a string type
+	values := strings.Split(value, "'")
+	// length, _ := strconv.Atoi(values[0])
+	var res int64
+	var ok error
+	str := values[1][1:]
+	switch values[1][0] {
+	case 'b':
+		res, ok = strconv.ParseInt(str, 2, 64)
+		break
+	case 'o':
+		res, ok = strconv.ParseInt(str, 8, 64)
+		break
+	case 'd':
+		res, ok = strconv.ParseInt(str, 10, 64)
+		break
+	case 'h':
+		res, ok = strconv.ParseInt(str, 16, 64)
+		break
+	default:
+		break
+	}
+	if ok == nil {
+		ba.Set(int(res))
+	} else {
+		ba.toIndef()
+	}
 }
 
 func (ba *BitArray) SetId(id string) {
@@ -116,33 +154,63 @@ func notify(a BitArray, preValue int) {
 	}
 }
 
+func searchIndef(ba BitArray) bool {
+	for _, v := range ba.bits {
+		if v.indefVal {
+			return true
+		}
+	}
+	return false
+}
+
+func (ba *BitArray) toIndef() {
+	for i, _ := range ba.bits {
+		ba.bits[i].indefVal = true
+	}
+}
+
 //Add はポート同士の加算を行う
 func (ba BitArray) Add(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a+b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a+b, length)
+	}
 	return result
 }
 
 //Sub はポート同士の減算を行う
 func (ba BitArray) Sub(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a-b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a-b, length)
+	}
 	return result
 }
 
 //Mul はポート同士の乗算を行う
 func (ba BitArray) Mul(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a*b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a*b, length)
+	}
 	return result
 }
 
@@ -158,31 +226,46 @@ func (ba BitArray) And(input BitArray) BitArray {
 
 //Bitxor はポート同士の排他的論理和を返す
 func (ba BitArray) Bitxor(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a^b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a^b, length)
+	}
 	return result
 }
 
 //Bitand はポート同士の論理積を返す
 func (ba BitArray) Bitand(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a&b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a&b, length)
+	}
 	return result
 }
 
 //Bitor はポート同士の論理和を返す
 func (ba BitArray) Bitor(input BitArray) BitArray {
-	a := ba.ToInt()
-	b := input.ToInt()
-	length := len(ba.bits)
 	var result BitArray
-	result = result.Calc(a|b, length)
+	result.InitBitArray(len(ba.bits))
+	if searchIndef(ba) || searchIndef(input) {
+		result.toIndef()
+	} else {
+		a := ba.ToInt()
+		b := input.ToInt()
+		length := len(ba.bits)
+		result = result.Calc(a|b, length)
+	}
 	return result
 }
 

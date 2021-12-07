@@ -2,7 +2,6 @@ package preprocess
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -65,7 +64,6 @@ func searchDefs(includeFile string) map[string]string {
 			defmap[a[1]] = a[2] + "'" + a[3]
 		}
 	}
-	fmt.Println(defmap)
 	return defmap
 }
 

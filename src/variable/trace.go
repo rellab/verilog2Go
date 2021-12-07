@@ -22,7 +22,9 @@ func writeSignal(ba BitArray) {
 func showBynary(ba BitArray) string {
 	var bit string
 	for _, v := range ba.GetBits() {
-		if v.value {
+		if v.indefVal || v.highInpedance {
+			bit = "x" + bit
+		} else if v.value {
 			bit = "1" + bit
 		} else {
 			bit = "0" + bit
