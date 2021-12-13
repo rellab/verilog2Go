@@ -21,7 +21,7 @@ expression returns [int number]
     | id=ID { $number = 13; }
     |	'(' expression ')' { $number = 14; }
     | expression '(' expression ')' { $number = 15; }
-    | ID'['Decimal ']' { $number = 16; }
+    | ID'['expression ']' { $number = 16; }
     ;
 
 Number

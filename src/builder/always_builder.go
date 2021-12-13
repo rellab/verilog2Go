@@ -52,18 +52,18 @@ func (b *Builder) IfStatement(conditionalStatement string) {
 
 // If there is an input signal in the if condition, convert it to a variable
 func (b *Builder) checkInputSignal(conditionalStatement string) string {
-	for i, v := range b.inputs {
+	for _, v := range b.inputs {
 		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
-			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
+			// conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
 		}
 	}
 	return conditionalStatement
 }
 
 func (b *Builder) checkInput(conditionalStatement string) string {
-	for i, v := range b.inputs {
+	for _, v := range b.inputs {
 		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
-			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
+			// conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
 		}
 	}
 	return conditionalStatement

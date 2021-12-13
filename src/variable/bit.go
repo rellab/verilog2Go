@@ -51,7 +51,6 @@ func (ba *BitArray) SetBits(value string) {
 	// value => ("4'b1111")
 	// value holds the value of each bit as a string type
 	values := strings.Split(value, "'")
-	// length, _ := strconv.Atoi(values[0])
 	var res int64
 	var ok error
 	str := values[1][1:]

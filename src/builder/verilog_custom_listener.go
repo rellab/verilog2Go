@@ -15,6 +15,7 @@ type CustomVerilogListener struct {
 	ports       []Port
 	dimensions  []string
 	params      []Param
+	variables   []Variable
 	currentPort Port
 }
 
@@ -29,6 +30,11 @@ type Port struct {
 type Param struct {
 	id         string
 	initiation string
+}
+
+type Variable struct {
+	id      string
+	varType string
 }
 
 var builder Builder
@@ -81,7 +87,7 @@ func (s *CustomVerilogListener) ExitModule_identifier(ctx *parser.Module_identif
 // ExitModule_declaration is called when production module_declaration is exited.
 func (s *CustomVerilogListener) ExitModule_declaration(ctx *parser.Module_declarationContext) {
 	// StartModule(ctx.Module_identifier().GetText())
-	builder.DeclarePorts(s.ports)
+	builder.DeclarePorts(s.ports, s.variables)
 	builder.CreateConstructor(ctx.Module_identifier().GetText(), s.ports, s.params)
 	builder.CreateRunMethod(s.ports)
 }
@@ -199,6 +205,14 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 	s.params = append(s.params, Param{
 		id:         s.currentPort.id,
 		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), moduleName, s.dimensions),
+	})
+}
+
+// ExitInteger_declaration is called when production integer_declaration is exited.
+func (s *CustomVerilogListener) ExitInteger_declaration(ctx *parser.Integer_declarationContext) {
+	s.variables = append(s.variables, Variable{
+		id:      ctx.List_of_variable_identifiers().GetText(),
+		varType: "int",
 	})
 }
 

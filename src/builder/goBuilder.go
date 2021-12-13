@@ -58,7 +58,7 @@ func (b *Builder) StartModule(modName string) {
 }
 
 //DeclarePorts declares ports
-func (b *Builder) DeclarePorts(ports []Port) {
+func (b *Builder) DeclarePorts(ports []Port, variables []Variable) {
 	if len(ports) < 1 {
 		return
 	}
@@ -85,6 +85,16 @@ func (b *Builder) DeclarePorts(ports []Port) {
 		dimensions = dimensions[:len(dimensions)-2]
 		b.ports.WriteString(dimensions + " []*variable.BitArray\n")
 	}
+
+	for i := 0; i < len(variables); i++ {
+		if i < len(variables)-1 {
+			b.ports.WriteString(variables[i].id + ", ")
+		} else {
+			b.ports.WriteString(variables[i].id)
+			b.ports.WriteString(" int\n")
+		}
+	}
+
 	b.ports.WriteString("}\n")
 }
 
