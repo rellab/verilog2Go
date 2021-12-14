@@ -39,6 +39,17 @@ func (s *CustomVerilogListener) ExitFunction_case_item(ctx *parser.Function_case
 	}
 }
 
+// EnterInitial_construct is called when production initial_construct is entered.
+func (s *CustomVerilogListener) EnterInitial_construct(ctx *parser.Initial_constructContext) {
+	statementCount = 0
+	builder.CreateInitial()
+}
+
+// ExitInitial_construct is called when production initial_construct is exited.
+func (s *CustomVerilogListener) ExitInitial_construct(ctx *parser.Initial_constructContext) {
+	builder.EndInitial()
+}
+
 // Convert conditional expression of case to int
 func toInt(str string) (result string) {
 	ports := strings.Split(str, "[")

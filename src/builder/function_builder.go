@@ -27,3 +27,11 @@ func (b *Builder) CreateFunction(funcName string, input string, length string) {
 	cases = ""
 	switchStatement = ""
 }
+
+func (b *Builder) CreateInitial() {
+
+}
+
+func (b *Builder) EndInitial() {
+
+}

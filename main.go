@@ -2,34 +2,33 @@ package main
 
 import (
 	//#include <stdio.h>
-	"C"
+	// "C"
+
+	"os"
 
 	"github.com/antlr/antlr4/runtime/Go/antlr"
 	parser "github.com/verilog2Go/antlr/verilog"
 	"github.com/verilog2Go/src/builder"
 	"github.com/verilog2Go/src/preprocess"
 )
-import (
-	"os"
-)
 
 //export createGo
-func createGo(src *C.char) {
-	//Read verilog source
-	input := antlr.NewInputStream(C.GoString(src))
-	//create lexer
-	lexer := parser.NewVerilogLexer(input)
-	stream := antlr.NewCommonTokenStream(lexer, 0)
-	//create parser
-	p := parser.NewVerilogParser(stream)
+// func createGo(src *C.char) {
+// 	//Read verilog source
+// 	input := antlr.NewInputStream(C.GoString(src))
+// 	//create lexer
+// 	lexer := parser.NewVerilogLexer(input)
+// 	stream := antlr.NewCommonTokenStream(lexer, 0)
+// 	//create parser
+// 	p := parser.NewVerilogParser(stream)
 
-	// set the listener
-	listener := builder.NewVerilogListener()
-	p.AddParseListener(listener)
+// 	// set the listener
+// 	listener := builder.NewVerilogListener()
+// 	p.AddParseListener(listener)
 
-	tree := p.Source_text()
-	tree.ToStringTree([]string{}, p)
-}
+// 	tree := p.Source_text()
+// 	tree.ToStringTree([]string{}, p)
+// }
 
 func main() {
 	// createGo(C.CString("module adder(a, b, q); input [3:0] a, b; output [3:0] q; assign q = a + b; endmodule"))

@@ -6,6 +6,8 @@ import (
 	parser "github.com/verilog2Go/antlr/expression"
 )
 
+var expCount int
+
 // CustomExpressionListener はBaseExpressionListenerを構造体として宣言
 type CustomExpressionListener struct {
 	*parser.BaseExpressionListener
@@ -18,6 +20,16 @@ func NewExpressionListener() *CustomExpressionListener {
 
 func (s *CustomExpressionListener) EnterStart(ctx *parser.StartContext) {
 	InitializeStack()
+}
+
+// ExitStart is called when production start is exited.
+func (s *CustomExpressionListener) ExitStart(ctx *parser.StartContext) {
+	expCount = 0
+}
+
+// EnterExpression is called when production expression is entered.
+func (s *CustomExpressionListener) EnterExpression(ctx *parser.ExpressionContext) {
+	expCount++
 }
 
 // ExitExpression is called when production expression is entered.
@@ -44,6 +56,10 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 	//数字
 	case 17:
 		AddValue(ToInt(ctx.GetId().GetText()))
+		break
+	case 18:
+		AddValue(ToInt(ctx.GetText()))
+		break
 	default:
 		OperateBinary(ctx.GetOp().GetText())
 	}
@@ -63,27 +79,11 @@ func ToInt(str string) (result string) {
 		}
 		result = ports[0] + ".Get(" + strings.TrimRight(ports[1], "]") + ")"
 	} else if len(values) > 1 {
-		// var value int64
-		// length := values[0]
-		// switch values[1][0] {
-		// case 'b':
-		// 	// strValue = fmt.Sprintf("%b", value)
-		// 	value, _ = strconv.ParseInt(values[1][1:], 2, 64)
-		// 	break
-		// case 'o':
-		// 	value, _ = strconv.ParseInt(values[1][1:], 8, 64)
-		// 	break
-		// case 'd':
-		// 	value, _ = strconv.ParseInt(values[1][1:], 10, 64)
-		// 	break
-		// case 'h':
-		// 	value, _ = strconv.ParseInt(values[1][1:], 16, 64)
-		// 	break
-		// default:
-		// 	break
-		// }
-		// result = "variable.CreateBitArray(" + length + ", " + strconv.FormatInt(value, 10) + ")"
-		result = "variable.CreateBits(\"" + str + "\")"
+		if expCount == 1 {
+			result = "*variable.CreateBits(\"" + str + "\")"
+		} else {
+			result = "variable.CreateBits(\"" + str + "\")"
+		}
 	}
 	return
 }

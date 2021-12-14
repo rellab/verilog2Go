@@ -61,9 +61,9 @@ func (b *Builder) checkInputSignal(conditionalStatement string) string {
 }
 
 func (b *Builder) checkInput(conditionalStatement string) string {
-	for _, v := range b.inputs {
+	for i, v := range b.inputs {
 		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
-			// conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
+			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
 		}
 	}
 	return conditionalStatement
@@ -88,20 +88,33 @@ func (b *Builder) declarateInput() {
 	}
 }
 
-func (b *Builder) DeclarateVariable(exp string, dimensions []string) {
+func (b *Builder) CreateNonBlocking(lvalue string, exp string, dimensions []string) {
 	nonBlockingStatementCount++
 	//Variables for primary storage
 	temp := "var" + strconv.Itoa(nonBlockingStatementCount)
 	alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
-	slice := strings.Split(exp, "<=")
 
 	b.preAlways.WriteString(temp + " := *variable.CreateBitArray(8, 0)\n")
-	right := expression.CompileExpression(slice[1], strings.Title(moduleName), dimensions)
+	right := expression.CompileExpression(exp, strings.Title(moduleName), dimensions)
 	if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right, "(")) {
 		right = "*" + right
 	}
 	leftBlock += temp + ".Assign(" + right + ")\n"
-	rightBlock += strings.Title(moduleName) + "." + slice[0] + ".Assign(" + alwaysTemp + ")\n"
+	rightBlock += strings.Title(moduleName) + "." + lvalue + ".Assign(" + alwaysTemp + ")\n"
+}
+
+func (b *Builder) CreateBlocking(lvalue string, exp string, dimensions []string) {
+	//Variables for primary storage
+	// temp := "var" + strconv.Itoa(nonBlockingStatementCount)
+	// alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
+
+	// b.preAlways.WriteString(temp + " := *variable.CreateBitArray(8, 0)\n")
+	// right := expression.CompileExpression(exp, strings.Title(moduleName), dimensions)
+	// if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right, "(")) {
+	// 	right = "*" + right
+	// }
+	// leftBlock += temp + ".Assign(" + right + ")\n"
+	rightBlock += strings.Title(moduleName) + "." + lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
 }
 
 func (b *Builder) createPreAlwaysReturn() string {

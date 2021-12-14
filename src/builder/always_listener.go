@@ -66,7 +66,7 @@ func (s *CustomVerilogListener) ExitConditional_statement(ctx *parser.Conditiona
 }
 
 // EnterStatement_or_null is called when production statement_or_null is entered.
-func (s *CustomVerilogListener) EnterStatement_or_null(ctx *parser.Statement_or_nullContext) {
+func (s *CustomVerilogListener) EnterStatement(ctx *parser.StatementContext) {
 	// For if statement
 	if IfDepth > 0 {
 		//Judgment whether it is an else statement
@@ -78,7 +78,7 @@ func (s *CustomVerilogListener) EnterStatement_or_null(ctx *parser.Statement_or_
 }
 
 // ExitStatement_or_null is called when production statement_or_null is exited.
-func (s *CustomVerilogListener) ExitStatement_or_null(ctx *parser.Statement_or_nullContext) {
+func (s *CustomVerilogListener) ExitStatement(ctx *parser.StatementContext) {
 	// For if statement
 	if IfDepth > 0 {
 		//Start accepting processing in if statement
@@ -89,7 +89,12 @@ func (s *CustomVerilogListener) ExitStatement_or_null(ctx *parser.Statement_or_n
 // ExitNonblocking_assignment is called when production nonblocking_assignment is exited.
 func (s *CustomVerilogListener) ExitNonblocking_assignment(ctx *parser.Nonblocking_assignmentContext) {
 	//Non-blocking assignment statement
-	builder.DeclarateVariable(ctx.GetText(), s.dimensions)
+	builder.CreateNonBlocking(ctx.Variable_lvalue().GetText(), ctx.Expression().GetText(), s.dimensions)
+}
+
+// ExitBlocking_assignment is called when production blocking_assignment is exited.
+func (s *CustomVerilogListener) ExitBlocking_assignment(ctx *parser.Blocking_assignmentContext) {
+	builder.CreateBlocking(ctx.Variable_lvalue().GetText(), ctx.Expression().GetText(), s.dimensions)
 }
 
 func (s *CustomVerilogListener) ExitCase_statement(ctx *parser.Case_statementContext) {
