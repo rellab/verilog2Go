@@ -5,6 +5,7 @@ import (
 )
 
 var switchStatement, cases string
+var hasInitial bool
 
 func CreateCase(exp string, statement string) {
 	cases += "case " + exp + ":\n"
@@ -14,6 +15,7 @@ func CreateCase(exp string, statement string) {
 }
 
 func CreateSwitch(input string) {
+	// fmt.Println(cases)
 	switchStatement += "switch " + input + ".ToInt()" + "{\n"
 	switchStatement += cases
 	switchStatement += "}\n"
@@ -29,9 +31,11 @@ func (b *Builder) CreateFunction(funcName string, input string, length string) {
 }
 
 func (b *Builder) CreateInitial() {
-
+	hasInitial = true
 }
 
 func (b *Builder) EndInitial() {
-
+	b.function.WriteString("\nfunc (" + strings.Title(moduleName) + " *" + strings.Title(moduleName) + ") initial() {\n")
+	b.function.WriteString(loopStatement)
+	b.function.WriteString("}\n")
 }

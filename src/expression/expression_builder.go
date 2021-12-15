@@ -1,15 +1,11 @@
 package expression
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/golang-collections/collections/stack"
 )
-
-// Builder はスタックを定義する
-type Builder struct {
-	stack *stack.Stack
-}
 
 var expression *stack.Stack
 
@@ -28,7 +24,11 @@ func PushValue(id string) {
 	if ModuleName == "" {
 		expression.Push(id)
 	} else {
-		expression.Push(ModuleName + "." + id)
+		if expCount == 1 {
+			expression.Push("*" + ModuleName + "." + id)
+		} else {
+			expression.Push(ModuleName + "." + id)
+		}
 	}
 }
 
@@ -43,19 +43,14 @@ func OperateUniary(op string) {
 	switch op {
 	case "~":
 		result = value + ".Bnot()"
-		break
 	case "|":
 		result = value + ".Reductionor()"
-		break
 	case "!":
 		result = value + ".Not()"
-		break
 	case "&":
 		result = value + ".Baot()"
-		break
 	case "-":
 		result = value + ".Neg()"
-		break
 	default:
 
 	}
@@ -84,61 +79,41 @@ func OperateBinary(op string) {
 	switch op {
 	case "+":
 		result = left + ".Add(" + right + ")"
-		break
 	case "-":
 		result = left + ".Sub(" + right + ")"
-		break
 	case "*":
 		result = left + ".Mul(" + right + ")"
-		break
 	case "/":
 		result = left + ".Div(" + right + ")"
-		break
 	case "<<":
 		result = left + ".SHL(" + right + ")"
-		break
 	case ">>":
 		result = left + ".SHR(" + right + ")"
-		break
 	case "&&":
 		result = left + ".And(" + right + ")"
-		break
 	case "||":
 		result = left + ".Or(" + right + ")"
-		break
 	case "==":
 		result = left + ".Equal(" + right + ")"
-		break
 	case "!=":
 		result = left + ".NE(" + right + ")"
-		break
 	case ">=":
 		result = left + ".GE(" + right + ")"
-		break
 	case "<=":
 		result = left + ".LE(" + right + ")"
-		break
 	case ">":
 		result = left + ".GT(" + right + ")"
-		break
 	case "<":
 		result = left + ".LT(" + right + ")"
-		break
 	case "^":
 		result = left + ".Bitxor(" + right + ")"
-		break
 	case "|":
 		result = left + ".Bitor(" + right + ")"
-		break
 	case "&":
 		result = left + ".Bitand(" + right + ")"
-		break
 	case "=":
 		result = left + ".Set(" + right + ")"
-		break
 	default:
-		break
-
 	}
 	expression.Push(result)
 }
@@ -161,4 +136,30 @@ func CreateFunction() {
 	}
 	funcName := expression.Pop().(string)
 	expression.Push(funcName + "(" + input + ")")
+}
+
+func CreateDimension(id string) {
+	index := expression.Pop().(string)
+	_, ok := strconv.Atoi(index)
+	if ok == nil {
+		if ModuleName == "" {
+			expression.Push(id + "[" + index + "]")
+		} else {
+			if expCount == 1 {
+				expression.Push("*" + ModuleName + "." + id + "[" + index + "]")
+			} else {
+				expression.Push(ModuleName + "." + id + "[" + index + "]")
+			}
+		}
+	} else {
+		if ModuleName == "" {
+			expression.Push(id + "[" + index + ".ToInt()]")
+		} else {
+			if expCount == 1 {
+				expression.Push("*" + ModuleName + "." + id + "[" + index + ".ToInt()]")
+			} else {
+				expression.Push(ModuleName + "." + id + "[" + index + ".ToInt()]")
+			}
+		}
+	}
 }

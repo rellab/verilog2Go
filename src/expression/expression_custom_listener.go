@@ -38,28 +38,23 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 	//単項演算
 	case 1:
 		OperateUniary(ctx.GetOp().GetText())
-		break
 	//値
 	case 13:
 		PushValue(ToInt(ctx.GetId().GetText()))
-		break
-	//()内の演算
+		//()内の演算
 	case 14:
 		return
-	//メソッド
+		//メソッド
 	case 15:
 		CreateFunction()
-		break
 	case 16:
-		PushValue(ToInt(ctx.GetText()))
-		break
+		// PushValue(ToInt(ctx.GetText()))
+		CreateDimension(ctx.GetId().GetText())
 	//数字
 	case 17:
 		AddValue(ToInt(ctx.GetId().GetText()))
-		break
 	case 18:
 		AddValue(ToInt(ctx.GetText()))
-		break
 	default:
 		OperateBinary(ctx.GetOp().GetText())
 	}

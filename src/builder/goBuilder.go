@@ -41,7 +41,7 @@ func (b *Builder) generateSource() {
 // WriteFile writes source to a file
 func (builder *Builder) WriteFile(filename string) {
 	os.Mkdir("generated", 0777)
-	file, err := os.OpenFile("generated/"+filename+".go", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.Create("generated/" + filename + ".go")
 	defer file.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -64,25 +64,29 @@ func (b *Builder) DeclarePorts(ports []Port, variables []Variable) {
 	}
 	b.ports.WriteString("type " + strings.Title(moduleName) + " struct{\n")
 	dimensions := ""
+	var tmp []string
 	for i := 0; i < len(ports); i++ {
 		if i < len(ports)-1 {
 			if !ports[i].isDimension {
-				b.ports.WriteString(ports[i].id + ", ")
+				// b.ports.WriteString(ports[i].id + ", ")
+				tmp = append(tmp, ports[i].id)
 			} else {
 				dimensions += ports[i].id + ", "
 			}
 		} else {
 			if !ports[i].isDimension {
-				b.ports.WriteString(ports[i].id)
+				// b.ports.WriteString(ports[i].id)
+				tmp = append(tmp, ports[i].id)
 			} else {
 				dimensions += ports[i].id
 			}
 		}
 	}
 	// b.ports = b.ports[:len(b.ports)-2]
+	b.ports.WriteString(strings.Join(tmp, ","))
 	b.ports.WriteString(" *variable.BitArray\n")
 	if dimensions != "" {
-		dimensions = dimensions[:len(dimensions)-2]
+		dimensions = dimensions[:len(dimensions)]
 		b.ports.WriteString(dimensions + " []*variable.BitArray\n")
 	}
 
@@ -104,7 +108,7 @@ func (b *Builder) DeclareInput(input Port) {
 }
 
 // CreateConstructor creates a constructor
-func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Param) {
+func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Param, variables []Variable) {
 	if len(ports) < 1 {
 		return
 	}
@@ -120,24 +124,32 @@ func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Para
 		}
 	}
 
-	b.constructor.WriteString("return *args\n}\n\n")
-
 	b.subConstructor.WriteString("func NewGoroutine" + strings.Title(funcName) + " (in []chan int, out []chan int) *" + strings.Title(moduleName) + "{\n")
+	var tmp []string
 	b.subConstructor.WriteString(moduleName + " := &" + strings.Title(moduleName) + "{")
 	for i := 0; i < len(ports); i++ {
-		if i < len(ports)-1 {
-			b.subConstructor.WriteString("variable.NewBitArray(" + strconv.Itoa(ports[i].length) + "), ")
+		if ports[i].isDimension {
+			tmp = append(tmp, "make([]*variable.BitArray, "+strconv.Itoa(ports[i].dimLength)+")")
 		} else {
-			b.subConstructor.WriteString("variable.NewBitArray(" + strconv.Itoa(ports[i].length) + ")}\n")
+			tmp = append(tmp, "variable.NewBitArray("+strconv.Itoa(ports[i].length)+")")
 		}
 	}
-	b.subConstructor.WriteString("go " + moduleName + ".run(in, out)\n")
+	for i := 0; i < len(variables); i++ {
+		tmp = append(tmp, "0")
+	}
+	b.subConstructor.WriteString(strings.Join(tmp, ",") + "}\n")
+	if hasInitial {
+		b.constructor.WriteString("args.initial()\n")
+		b.subConstructor.WriteString(moduleName + ".initial()\n")
+	}
+	b.subConstructor.WriteString("go " + moduleName + ".start(in, out)\n")
+	b.constructor.WriteString("return *args\n}\n\n")
 	b.subConstructor.WriteString("return " + moduleName + "\n}\n\n")
 }
 
 func (b *Builder) CreateRunMethod(ports []Port) {
 	var inCounter, outCounter int
-	b.runMethod.WriteString("func (" + moduleName + " *" + strings.Title(moduleName) + ") run(in []chan int, out []chan int) {\n")
+	b.runMethod.WriteString("func (" + moduleName + " *" + strings.Title(moduleName) + ") start(in []chan int, out []chan int) {\n")
 	for _, v := range ports {
 		if v.portType == "output" {
 			b.runMethod.WriteString("defer close(out[" + strconv.Itoa(outCounter) + "])\n")
@@ -170,7 +182,7 @@ func (b *Builder) CreateRunMethod(ports []Port) {
 			inCounter++
 		}
 	}
-	b.runMethod.WriteString("}\n" + "}\n")
+	b.runMethod.WriteString("}\n}\n")
 	b.runMethod.WriteString("}\n\n")
 }
 

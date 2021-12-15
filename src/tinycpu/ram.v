@@ -16,8 +16,8 @@ module ram(clk, load, addr, d, q);
 
  integer i;
  initial begin
-    for(i=0;i<WORDS;i=i+1)
-       mem[i]=0;
+    for(i=0;i<4096;i=i+1)
+       mem[i]=1'b0;
  // ここにメモリの初期化（mem[12'h001]=16'h1234;など）を書く．
  end
 

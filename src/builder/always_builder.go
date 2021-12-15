@@ -32,38 +32,23 @@ func (b *Builder) CreateAlways() {
 func (b *Builder) EndAlways() {
 
 	b.preAlways.WriteString(leftBlock + b.createPreAlwaysReturn() + "}\n")
-	b.always.WriteString(switchStatement)
+	// b.always.WriteString(switchStatement)
 	b.always.WriteString(rightBlock + "}\n")
 
 	leftBlock = ""
 	rightBlock = ""
 }
 
-func (b *Builder) IfStart() {
-	ifBlock += "{\n"
-}
-
 func (b *Builder) IfStatement(conditionalStatement string) {
-	leftConditionalStatement := b.checkInputSignal(conditionalStatement)
 	rightConditionalStatement := b.checkInput(conditionalStatement)
-	leftBlock += "if variable.CheckBit(" + leftConditionalStatement + ") {\n"
+	leftBlock += "if variable.CheckBit(" + conditionalStatement + ") {\n"
 	rightBlock += "if variable.CheckBit(" + rightConditionalStatement + ") {\n"
 }
 
-// If there is an input signal in the if condition, convert it to a variable
-func (b *Builder) checkInputSignal(conditionalStatement string) string {
+func (b *Builder) checkInput(conditionalStatement string) string {
 	for _, v := range b.inputs {
 		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
-			// conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "var" + strconv.Itoa(i+1) + ")"
-		}
-	}
-	return conditionalStatement
-}
-
-func (b *Builder) checkInput(conditionalStatement string) string {
-	for i, v := range b.inputs {
-		if strings.Contains(conditionalStatement, strings.Title(moduleName)+"."+v.id) {
-			conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
+			// conditionalStatement = conditionalStatement[:strings.Index(conditionalStatement, strings.Title(moduleName)+"."+v.id)-1] + "vars[" + strconv.Itoa(i) + "])"
 		}
 	}
 	return conditionalStatement
@@ -96,25 +81,33 @@ func (b *Builder) CreateNonBlocking(lvalue string, exp string, dimensions []stri
 
 	b.preAlways.WriteString(temp + " := *variable.CreateBitArray(8, 0)\n")
 	right := expression.CompileExpression(exp, strings.Title(moduleName), dimensions)
-	if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right, "(")) {
-		right = "*" + right
+	lvalue = expression.CompileExpression(lvalue, strings.Title(moduleName), dimensions)
+	if right[0] != '*' {
+		if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right[:len(right)-5], "(")) {
+			right = "*" + right
+		}
 	}
-	leftBlock += temp + ".Assign(" + right + ")\n"
-	rightBlock += strings.Title(moduleName) + "." + lvalue + ".Assign(" + alwaysTemp + ")\n"
+	if lvalue[0] == '*' {
+		lvalue = lvalue[1:]
+	}
+	if isCase {
+		caseStatement += lvalue + ".Assign(" + right + ")\n"
+	} else if isAlways {
+		leftBlock += temp + ".Assign(" + right + ")\n"
+		rightBlock += lvalue + ".Assign(" + alwaysTemp + ")\n"
+	}
 }
 
 func (b *Builder) CreateBlocking(lvalue string, exp string, dimensions []string) {
-	//Variables for primary storage
-	// temp := "var" + strconv.Itoa(nonBlockingStatementCount)
-	// alwaysTemp := "vars[" + strconv.Itoa(nonBlockingStatementCount-1) + "]"
-
-	// b.preAlways.WriteString(temp + " := *variable.CreateBitArray(8, 0)\n")
-	// right := expression.CompileExpression(exp, strings.Title(moduleName), dimensions)
-	// if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right, "(")) {
-	// 	right = "*" + right
-	// }
-	// leftBlock += temp + ".Assign(" + right + ")\n"
-	rightBlock += strings.Title(moduleName) + "." + lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
+	lvalue = expression.CompileExpression(lvalue, strings.Title(moduleName), dimensions)
+	if lvalue[0] == '*' {
+		lvalue = lvalue[1:]
+	}
+	if isLoop {
+		loopStatement += lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
+	} else if isAlways {
+		rightBlock += lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
+	}
 }
 
 func (b *Builder) createPreAlwaysReturn() string {
@@ -130,16 +123,25 @@ func (b *Builder) createPreAlwaysReturn() string {
 	return result
 }
 
-func (s *CustomVerilogListener) CreateAlwaysCase(exp string, statement string) {
-	cases += "case " + exp + ":\n"
-	index := strings.Index(statement, "=")
-	cases += expression.CompileExpression(statement[:index], strings.Title(moduleName), s.dimensions) + ".Substitute(" + expression.CompileExpression(statement[index+1:len(statement)-1], strings.Title(moduleName), s.dimensions) + ")\n"
-	cases += "break\n"
+func (b *Builder) CreateAlwaysCase(exp string) {
+	if caseStatement != "" {
+		cases += "case " + exp + ":\n" + caseStatement[:len(caseStatement)] + "\n"
+	} else {
+		cases += "case " + exp + ":\n"
+	}
+	caseStatement = ""
 }
 
-func (s *CustomVerilogListener) CreateDefault(statement string) {
-	cases += "default:\n"
-	index := strings.Index(statement, "=")
-	cases += expression.CompileExpression(statement[:index], strings.Title(moduleName), s.dimensions) + ".Substitute(*" + expression.CompileExpression(statement[index+1:len(statement)-1], strings.Title(moduleName), s.dimensions) + ")\n"
-	cases += "break\n"
+func (b *Builder) CreateDefault() {
+	if caseStatement != "" {
+		cases += "default:\n" + caseStatement[:len(caseStatement)] + "\n"
+	} else {
+		cases += "default:\n"
+	}
+	caseStatement = ""
+}
+
+func (b *Builder) CreateLoop(exp1 string, exp2 string, exp3 string) {
+	loopStatement = "for " + exp1 + ";" + exp2 + ";" + exp3 + "{\n" + loopStatement
+	loopStatement += "}\n"
 }

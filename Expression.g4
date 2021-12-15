@@ -21,7 +21,7 @@ expression returns [int number]
     | id=ID { $number = 13; }
     |	'(' expression ')' { $number = 14; }
     | expression '(' expression ')' { $number = 15; }
-    | ID'['expression ']' { $number = 16; }
+    | id=ID'['expression ']' { $number = 16; }
     | Decimal { $number = 18; }
     ;
 
@@ -34,9 +34,6 @@ Number
 
 ID
    : [a-zA-Z_] [a-zA-Z0-9$_']*
-   | Binary_number
-   | Octal_number
-   | Hex_number
    ;
 Decimal_number
    : (Size)? Decimal_base Unsigned_number
