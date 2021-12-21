@@ -9,7 +9,6 @@ import (
 
 var isAlways bool
 var isCase bool
-var isSeqBlock bool
 var isLoop bool
 var IfDepth int
 var statementDepth int
@@ -77,23 +76,17 @@ func (s *CustomVerilogListener) ExitExpression(ctx *parser.ExpressionContext) {
 func (s *CustomVerilogListener) ExitConditional_statement(ctx *parser.Conditional_statementContext) {
 	//end if statement
 	IfDepth--
+	builder.EndIfStatement()
+	// fmt.Println(ctx.GetId())
+}
+
+// EnterElse_statement is called when production else_statement is entered.
+func (s *CustomVerilogListener) EnterElse_statement(ctx *parser.Else_statementContext) {
+	builder.ElseStatement()
 }
 
 // EnterStatement_or_null is called when production statement_or_null is entered.
 func (s *CustomVerilogListener) EnterStatement(ctx *parser.StatementContext) {
-	// For if statement
-	if !isSeqBlock {
-
-		if IfDepth > 0 {
-			//Judgment whether it is an else statement
-			if statementCount == 2 {
-				if isAlways && !isCase {
-					builder.ElseStatement()
-				}
-			}
-			statementCount++
-		}
-	}
 	if isCase {
 		if caseStatementCount%2 == 0 && caseStatementCount != 0 {
 			caseStatement = caseStatement[:len(caseStatement)-1] + " else{\n"
@@ -105,13 +98,6 @@ func (s *CustomVerilogListener) EnterStatement(ctx *parser.StatementContext) {
 
 // ExitStatement_or_null is called when production statement_or_null is exited.
 func (s *CustomVerilogListener) ExitStatement(ctx *parser.StatementContext) {
-	// For if statement
-	if IfDepth > 0 && !isSeqBlock {
-		//Start accepting processing in if statement
-		if isAlways && !isCase {
-			builder.EndIfStatement()
-		}
-	}
 	if isCase {
 		if statementDepth != 1 {
 			caseStatement += "}\n"
@@ -153,19 +139,6 @@ func (s *CustomVerilogListener) ExitCase_item(ctx *parser.Case_itemContext) {
 		builder.CreateDefault()
 	}
 	isCase = false
-}
-
-// EnterSeq_block is called when production seq_block is entered.
-func (s *CustomVerilogListener) EnterSeq_block(ctx *parser.Seq_blockContext) {
-	isSeqBlock = true
-}
-
-// ExitSeq_block is called when production seq_block is exited.
-func (s *CustomVerilogListener) ExitSeq_block(ctx *parser.Seq_blockContext) {
-	isSeqBlock = false
-	if isAlways && !isCase {
-		builder.EndIfStatement()
-	}
 }
 
 // EnterLoop_statement is called when production loop_statement is entered.

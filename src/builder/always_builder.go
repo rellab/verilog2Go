@@ -56,8 +56,8 @@ func (b *Builder) checkInput(conditionalStatement string) string {
 
 func (b *Builder) ElseStatement() {
 	//Delete the previous line feed code
-	leftBlock = leftBlock[:len(leftBlock)-1] + " else{\n"
-	rightBlock = rightBlock[:len(rightBlock)-1] + " else{\n"
+	leftBlock = leftBlock[:len(leftBlock)-1] + "} else{\n"
+	rightBlock = rightBlock[:len(rightBlock)-1] + "} else{\n"
 }
 
 func (b *Builder) EndIfStatement() {
@@ -83,7 +83,7 @@ func (b *Builder) CreateNonBlocking(lvalue string, exp string, dimensions []stri
 	right := expression.CompileExpression(exp, strings.Title(moduleName), dimensions)
 	lvalue = expression.CompileExpression(lvalue, strings.Title(moduleName), dimensions)
 	if right[0] != '*' {
-		if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) || !(strings.Contains(right[:len(right)-5], "(")) {
+		if (strings.Contains(right, "Get(") && len(right) < 20) || (strings.Contains(right, "CreateBitArray(") && len(right) < 31) {
 			right = "*" + right
 		}
 	}
@@ -105,6 +105,8 @@ func (b *Builder) CreateBlocking(lvalue string, exp string, dimensions []string)
 	}
 	if isLoop {
 		loopStatement += lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
+	} else if isCase {
+		caseStatement += lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
 	} else if isAlways {
 		rightBlock += lvalue + ".Assign(" + expression.CompileExpression(exp, strings.Title(moduleName), dimensions) + ")\n"
 	}
@@ -124,6 +126,7 @@ func (b *Builder) createPreAlwaysReturn() string {
 }
 
 func (b *Builder) CreateAlwaysCase(exp string) {
+	// fmt.Println(caseStatement)
 	if caseStatement != "" {
 		cases += "case " + exp + ":\n" + caseStatement[:len(caseStatement)] + "\n"
 	} else {

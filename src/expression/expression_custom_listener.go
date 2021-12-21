@@ -41,10 +41,10 @@ func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext)
 	//値
 	case 13:
 		PushValue(ToInt(ctx.GetId().GetText()))
-		//()内の演算
+	//()内の演算
 	case 14:
 		return
-		//メソッド
+	//メソッド
 	case 15:
 		CreateFunction()
 	case 16:

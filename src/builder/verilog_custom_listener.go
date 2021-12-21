@@ -56,7 +56,7 @@ func (s *CustomVerilogListener) EnterSource_text(ctx *parser.Source_textContext)
 		subConstructor: bytes.NewBuffer(make([]byte, 0, 100)),
 		observer:       bytes.NewBuffer(make([]byte, 0, 100)),
 		assigns:        bytes.NewBuffer(make([]byte, 0, 100)),
-		instances:      bytes.NewBuffer(make([]byte, 0, 100)),
+		instances:      bytes.NewBuffer(make([]byte, 0, 500)),
 		runMethod:      bytes.NewBuffer(make([]byte, 0, 100)),
 		preAlways:      bytes.NewBuffer(make([]byte, 0, 100)),
 		always:         bytes.NewBuffer(make([]byte, 0, 100)),
@@ -213,7 +213,7 @@ func (s *CustomVerilogListener) ExitParam_assignment(ctx *parser.Param_assignmen
 	s.ports = append(s.ports, s.currentPort)
 	s.params = append(s.params, Param{
 		id:         s.currentPort.id,
-		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), moduleName, s.dimensions),
+		initiation: expression.CompileExpression(ctx.Constant_expression().GetText(), moduleName, s.dimensions)[1:],
 	})
 }
 
@@ -239,6 +239,10 @@ func (s *CustomVerilogListener) ExitNet_assignment(ctx *parser.Net_assignmentCon
 // ExitDimension is called when production dimension is exited.
 func (s *CustomVerilogListener) ExitDimension(ctx *parser.DimensionContext) {
 	s.currentPort.dimLength, _ = strconv.Atoi(ctx.Dimension_constant_expression(0).GetText())
+	if s.currentPort.dimLength == 0 {
+		s.currentPort.dimLength, _ = strconv.Atoi(ctx.Dimension_constant_expression(1).GetText())
+	}
+	s.currentPort.dimLength++
 }
 
 func searchPort(id string, ports []Port) bool {

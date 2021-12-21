@@ -71,7 +71,7 @@ func (b *Builder) DeclarePorts(ports []Port, variables []Variable) {
 				// b.ports.WriteString(ports[i].id + ", ")
 				tmp = append(tmp, ports[i].id)
 			} else {
-				dimensions += ports[i].id + ", "
+				dimensions += ports[i].id
 			}
 		} else {
 			if !ports[i].isDimension {
@@ -128,10 +128,13 @@ func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Para
 	var tmp []string
 	b.subConstructor.WriteString(moduleName + " := &" + strings.Title(moduleName) + "{")
 	for i := 0; i < len(ports); i++ {
+		if !ports[i].isDimension {
+			tmp = append(tmp, "variable.NewBitArray("+strconv.Itoa(ports[i].length)+")")
+		}
+	}
+	for i := 0; i < len(ports); i++ {
 		if ports[i].isDimension {
 			tmp = append(tmp, "make([]*variable.BitArray, "+strconv.Itoa(ports[i].dimLength)+")")
-		} else {
-			tmp = append(tmp, "variable.NewBitArray("+strconv.Itoa(ports[i].length)+")")
 		}
 	}
 	for i := 0; i < len(variables); i++ {

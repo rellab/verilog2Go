@@ -73,7 +73,7 @@ func OperateBinary(op string) {
 		strings.Contains(right, "Not(") ||
 		strings.Contains(right, "Reductionor(") ||
 		strings.Contains(right, "Set(")) {
-		right = "*" + right
+		// right = "*" + right
 	}
 	var result string = ""
 	switch op {
@@ -135,6 +135,9 @@ func CreateFunction() {
 		input = "*" + input
 	}
 	funcName := expression.Pop().(string)
+	if funcName[0] == '*' {
+		funcName = funcName[1:]
+	}
 	expression.Push(funcName + "(" + input + ")")
 }
 
@@ -145,11 +148,7 @@ func CreateDimension(id string) {
 		if ModuleName == "" {
 			expression.Push(id + "[" + index + "]")
 		} else {
-			if expCount == 1 {
-				expression.Push("*" + ModuleName + "." + id + "[" + index + "]")
-			} else {
-				expression.Push(ModuleName + "." + id + "[" + index + "]")
-			}
+			expression.Push("*" + ModuleName + "." + id + "[" + index + "]")
 		}
 	} else {
 		if ModuleName == "" {
