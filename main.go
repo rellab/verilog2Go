@@ -39,6 +39,10 @@ func main() {
 	// if err != nil {
 	// 	panic(err)
 	// }
+	Verilog2go(sourceFile)
+}
+
+func Verilog2go(sourceFile string) {
 	str := preprocess.Preprocess(sourceFile)
 	// fmt.Println(str)
 	input := antlr.NewInputStream(str)
