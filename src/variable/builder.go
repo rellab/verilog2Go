@@ -40,7 +40,7 @@ func Close() {
 }
 
 func write() {
-	file, err := os.OpenFile(moduleName+".vcd", os.O_WRONLY|os.O_CREATE, 0666)
+	file, err := os.Create(moduleName + ".vcd")
 	if err != nil {
 		//エラー処理
 		log.Fatal(err)

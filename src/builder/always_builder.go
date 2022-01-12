@@ -31,9 +31,9 @@ func (b *Builder) CreateAlways() {
 
 func (b *Builder) EndAlways() {
 
-	b.preAlways.WriteString(leftBlock + b.createPreAlwaysReturn() + "}\n")
+	b.preAlways.WriteString(leftBlock + b.createPreAlwaysReturn() + "}\n\n")
 	// b.always.WriteString(switchStatement)
-	b.always.WriteString(rightBlock + "}\n")
+	b.always.WriteString(rightBlock + "}\n\n")
 
 	leftBlock = ""
 	rightBlock = ""

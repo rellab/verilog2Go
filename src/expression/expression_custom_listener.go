@@ -34,6 +34,7 @@ func (s *CustomExpressionListener) EnterExpression(ctx *parser.ExpressionContext
 
 // ExitExpression is called when production expression is entered.
 func (s *CustomExpressionListener) ExitExpression(ctx *parser.ExpressionContext) {
+	// fmt.Println(ctx.GetText())
 	switch ctx.GetNumber() {
 	//単項演算
 	case 1:

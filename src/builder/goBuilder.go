@@ -40,8 +40,8 @@ func (b *Builder) generateSource() {
 
 // WriteFile writes source to a file
 func (builder *Builder) WriteFile(filename string) {
-	os.Mkdir("generated", 0777)
-	file, err := os.Create("generated/" + filename + ".go")
+	os.Mkdir("tdd", 0777)
+	file, err := os.Create("tdd/" + filename + ".go")
 	defer file.Close()
 	if err != nil {
 		log.Fatal(err)
@@ -99,7 +99,7 @@ func (b *Builder) DeclarePorts(ports []Port, variables []Variable) {
 		}
 	}
 
-	b.ports.WriteString("}\n")
+	b.ports.WriteString("}\n\n")
 }
 
 // DeclareInput creates an array of input signals
@@ -113,19 +113,12 @@ func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Para
 		return
 	}
 	//First line of constructor
-	ConstructorArgument := "func New" + strings.Title(funcName) + "(args *" + strings.Title(moduleName) + ") " + strings.Title(moduleName) + "{\n"
-
-	b.constructor.WriteString(ConstructorArgument)
-	b.constructor.WriteString(b.observer.String())
-
-	if len(params) > 0 {
-		for _, v := range params {
-			b.constructor.WriteString("args." + v.id + " = " + v.initiation + "\n")
-		}
-	}
-
+	b.constructor.WriteString("func New" + strings.Title(funcName) + "() " + strings.Title(moduleName) + "{\n")
 	b.subConstructor.WriteString("func NewGoroutine" + strings.Title(funcName) + " (in []chan int, out []chan int) *" + strings.Title(moduleName) + "{\n")
 	var tmp []string
+	var contmp string
+	var subcontmp string
+	b.constructor.WriteString("args := &" + strings.Title(moduleName) + "{")
 	b.subConstructor.WriteString(moduleName + " := &" + strings.Title(moduleName) + "{")
 	for i := 0; i < len(ports); i++ {
 		if !ports[i].isDimension {
@@ -135,12 +128,26 @@ func (b *Builder) CreateConstructor(funcName string, ports []Port, params []Para
 	for i := 0; i < len(ports); i++ {
 		if ports[i].isDimension {
 			tmp = append(tmp, "make([]*variable.BitArray, "+strconv.Itoa(ports[i].dimLength)+")")
+			for j := 0; j < ports[i].dimLength; j++ {
+				contmp += "args." + ports[i].id + "[" + strconv.Itoa(j) + "] = variable.NewBitArray(" + strconv.Itoa(ports[i].length) + ")\n"
+				subcontmp += moduleName + "." + ports[i].id + "[" + strconv.Itoa(j) + "] = variable.NewBitArray(" + strconv.Itoa(ports[i].length) + ")\n"
+			}
 		}
 	}
 	for i := 0; i < len(variables); i++ {
 		tmp = append(tmp, "0")
 	}
+	b.constructor.WriteString(strings.Join(tmp, ",") + "}\n")
 	b.subConstructor.WriteString(strings.Join(tmp, ",") + "}\n")
+	b.constructor.WriteString(contmp)
+	b.subConstructor.WriteString(subcontmp)
+	b.constructor.WriteString(b.observer.String())
+
+	if len(params) > 0 {
+		for _, v := range params {
+			b.constructor.WriteString("args." + v.id + " = " + v.initiation + "\n")
+		}
+	}
 	if hasInitial {
 		b.constructor.WriteString("args.initial()\n")
 		b.subConstructor.WriteString(moduleName + ".initial()\n")

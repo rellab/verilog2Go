@@ -11,7 +11,6 @@ func CreateCase(exp string, statement string) {
 	cases += "case " + exp + ":\n"
 	terms := strings.Split(statement, "=")
 	cases += terms[0] + ".Set(" + toInt(terms[1][:len(terms[1])-1]) + ")\n"
-	cases += "break\n"
 }
 
 func CreateSwitch(input string) {

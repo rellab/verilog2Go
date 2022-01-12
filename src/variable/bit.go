@@ -345,7 +345,7 @@ func (ba BitArray) Bitor(input BitArray) BitArray {
 	return result
 }
 
-func (ba *BitArray) Not() BitArray {
+func (ba BitArray) Not() BitArray {
 	length := len(ba.bits)
 	var result BitArray
 	result.InitBitArray(length)

@@ -24,11 +24,14 @@ func PushValue(id string) {
 	if ModuleName == "" {
 		expression.Push(id)
 	} else {
+		// fmt.Println(id)
+		// fmt.Println(expCount)
 		if expCount == 1 {
 			expression.Push("*" + ModuleName + "." + id)
 		} else {
 			expression.Push(ModuleName + "." + id)
 		}
+		// expression.Push("*" + ModuleName + "." + id)
 	}
 }
 
@@ -94,6 +97,9 @@ func OperateBinary(op string) {
 	case "||":
 		result = left + ".Or(" + right + ")"
 	case "==":
+		if !strings.Contains(right, "*") {
+			right = "*" + right
+		}
 		result = left + ".Equal(" + right + ")"
 	case "!=":
 		result = left + ".NE(" + right + ")"
