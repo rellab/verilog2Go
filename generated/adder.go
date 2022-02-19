@@ -11,8 +11,8 @@ func NewAdder(args *Adder) Adder {
 }
 
 func NewGoroutineAdder(in []chan int, out []chan int) *Adder {
-	adder := &Adder{variable.NewBitArray(4), variable.NewBitArray(4), variable.NewBitArray(4)}
-	go adder.run(in, out)
+	adder := &Adder{variable.NewBitArray(4), variable.NewBitArray(4), variable.NewBitArray(1)}
+	go adder.start(in, out)
 	return adder
 }
 
@@ -20,7 +20,7 @@ func (adder *Adder) Exec() {
 	adder.q.Assign(adder.b.Add(*adder.a))
 }
 
-func (adder *Adder) run(in []chan int, out []chan int) {
+func (adder *Adder) start(in []chan int, out []chan int) {
 	defer close(out[0])
 	for {
 		select {

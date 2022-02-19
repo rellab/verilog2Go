@@ -70,20 +70,20 @@ func (Cnt_unit *Cnt_unit) PreAlways1() []variable.BitArray {
 	var3 := *variable.CreateBitArray(1, Cnt_unit.EN.ToInt())
 	var4 := *variable.CreateBitArray(8, 0)
 	var5 := *variable.CreateBitArray(8, 0)
-	if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(var2)) {
-		var4.Assign(*variable.CreateBitArray(1, 0))
+	if variable.CheckBit(variable.CreateBits("1'b1").Equal(*Cnt_unit.RES)) {
+		var4.Assign(*variable.CreateBits("1'b0"))
 	} else {
-		if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(var3)) {
-			var5.Assign(Cnt_unit.Q.Not())
+		if variable.CheckBit(variable.CreateBits("1'b1").Equal(*Cnt_unit.EN)) {
+			var5.Assign(Cnt_unit.Q.Bnot())
 		}
 	}
 	return []variable.BitArray{var1, var2, var3, var4, var5}
 }
 func (Cnt_unit *Cnt_unit) Always1(vars []variable.BitArray) {
-	if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[1])) {
+	if variable.CheckBit(variable.CreateBits("1'b1").Equal(vars[1])) {
 		Cnt_unit.Q.Assign(vars[3])
 	} else {
-		if variable.CheckBit(variable.CreateBitArray(1, 1).Equal(vars[2])) {
+		if variable.CheckBit(variable.CreateBits("1'b1").Equal(vars[2])) {
 			Cnt_unit.Q.Assign(vars[4])
 		}
 	}

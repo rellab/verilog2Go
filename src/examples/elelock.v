@@ -7,10 +7,10 @@ reg ke1, ke2;
 reg [3:0] key [0: 3];
 wire match, key_enbl;
 
-//暗証番号設定
+// PIN setting
 parameter SECRET_3 = 4'h5, SECRET_2 = 4'h9, SECRET_1 = 4'h6, SECRET_0 = 4'h3;
 
-//暗証番号入力レジスタ
+// PIN input register
 always@(posedge clk or posedge reset) begin
 	if(reset == 1'b1)begin
 		key[3] <= 4'b1111;
@@ -32,7 +32,7 @@ always@(posedge clk or posedge reset) begin
 	end
 end
 
-//テンキー入力チャッタ取り用
+// For numeric keypad input chatter removal
 always@(posedge clk or posedge reset) begin
 	if(reset == 1'b1) begin
 		ke2 <= 1'b0;
@@ -44,7 +44,7 @@ always@(posedge clk or posedge reset) begin
 	end
 end
 
-//電子錠出力
+// Electronic lock output
 always@(posedge clk or posedge reset) begin
 	if(reset == 1'b1)
 		lock <= 1'b1;
@@ -54,7 +54,7 @@ always@(posedge clk or posedge reset) begin
 		lock <= 1'b0;
 end
 
-//テンキー入力エンコーダ
+// Numeric keypad input encoder
 function [3:0] keyenc;
 input [9:0] sw;
 	case(sw)
@@ -71,7 +71,7 @@ input [9:0] sw;
 	endcase
 endfunction
 
-//暗証番号一致信号
+// PIN match signal
 assign match = (key[0] == SECRET_0) && (key[1] == SECRET_1) && (key[2] == SECRET_2) && (key[3] == SECRET_3);
 assign key_enbl = ~ke2 & ke1;
 

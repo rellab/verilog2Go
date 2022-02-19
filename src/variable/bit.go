@@ -57,18 +57,13 @@ func (ba *BitArray) SetBits(value string) {
 	switch values[1][0] {
 	case 'b':
 		res, ok = strconv.ParseInt(str, 2, 64)
-		break
 	case 'o':
 		res, ok = strconv.ParseInt(str, 8, 64)
-		break
 	case 'd':
 		res, ok = strconv.ParseInt(str, 10, 64)
-		break
 	case 'h':
 		res, ok = strconv.ParseInt(str, 16, 64)
-		break
 	default:
-		break
 	}
 	if ok == nil {
 		ba.Set(int(res))
@@ -113,18 +108,13 @@ func CreateBits(value string) *BitArray {
 	switch values[1][0] {
 	case 'b':
 		res, ok = strconv.ParseInt(str, 2, 64)
-		break
 	case 'o':
 		res, ok = strconv.ParseInt(str, 8, 64)
-		break
 	case 'd':
 		res, ok = strconv.ParseInt(str, 10, 64)
-		break
 	case 'h':
 		res, ok = strconv.ParseInt(str, 16, 64)
-		break
 	default:
-		break
 	}
 	if ok == nil {
 		result.Set(int(res))
@@ -166,6 +156,9 @@ func (BitArray) Calc(value int, length int) BitArray {
 func (ba BitArray) ToInt() int {
 	ret := 0
 	length := len(ba.bits)
+	if searchIndef(ba) {
+		return -1
+	}
 	for i := length - 1; i >= 0; i-- {
 		//bitの値がtrueの場合，対応する値を加算する
 		if ba.bits[i].value {

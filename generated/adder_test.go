@@ -35,7 +35,6 @@ func TestAdder(t *testing.T) {
 
 		// Evaluate DUT
 		adder.Exec()
-		// fmt.Println(q.ToInt())
 		variable.Dump(time_counter)
 		time_counter++
 	}
@@ -76,7 +75,6 @@ func TestAdderGoroutine(t *testing.T) {
 			if ok {
 				fmt.Println(q)
 			} else {
-				// アウトプットチャンネルがクローズされたら終了
 				return
 			}
 		}
